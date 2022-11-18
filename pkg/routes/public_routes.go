@@ -11,5 +11,9 @@ func PublicRoutes(app *fiber.App) {
 	route := app.Group("/api/v1")
 
 	//Routes for GET methods
-	route.Get("/classwork", controllers.GetClasswork)
+	route.Get("/classwork", controllers.GetClasswork)   //get classwork
+	route.Get("/ipr", controllers.GetIPR)               //get interim progress report
+	route.Get("/reportcard", controllers.GetReportCard) //get report card
+	route.Get("/schedule", controllers.GetSchedule)     //get schedule
+	route.Get("/transcript", controllers.GetTranscript) //get transcript
 }
