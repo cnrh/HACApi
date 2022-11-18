@@ -1,0 +1,27 @@
+package main
+
+import (
+	"log"
+
+	"github.com/Threqt1/HACApi/pkg/configs"
+	"github.com/Threqt1/HACApi/pkg/middleware"
+	"github.com/Threqt1/HACApi/pkg/routes"
+	"github.com/gofiber/fiber/v2"
+)
+
+func main() {
+	//Make new config
+	config := configs.FiberConfig()
+
+	//Make app with config
+	app := fiber.New(config)
+
+	//Register middleware(s)
+	middleware.FiberMiddleware(app)
+
+	//Register routes
+	routes.PublicRoutes(app)
+
+	//Start server
+	log.Fatal(app.Listen(":3000"))
+}
