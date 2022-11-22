@@ -5,15 +5,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// PublicRoutes func for describing groups of public routes
+// PublicRoutes sets up groups of public routes.
 func PublicRoutes(app *fiber.App) {
 	//Create group
 	route := app.Group("/api/v1")
 
-	//Routes for GET methods
-	route.Get("/classwork", controllers.GetClasswork)   //get classwork
-	route.Get("/ipr", controllers.GetIPR)               //get interim progress report
-	route.Get("/reportcard", controllers.GetReportCard) //get report card
-	route.Get("/schedule", controllers.GetSchedule)     //get schedule
-	route.Get("/transcript", controllers.GetTranscript) //get transcript
+	//Routes for POST methods
+	route.Post("/login", controllers.PostLogin)
+	route.Post("/classwork", controllers.PostClasswork)   //post classwork
+	route.Post("/ipr", controllers.PostIPR)               //post interim progress report
+	route.Post("/reportcard", controllers.PostReportCard) //post report card
+	route.Post("/schedule", controllers.PostSchedule)     //post schedule
+	route.Post("/transcript", controllers.PostTranscript) //post transcript
 }

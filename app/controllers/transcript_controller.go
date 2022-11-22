@@ -4,6 +4,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetTranscript(context *fiber.Ctx) error {
+func PostTranscript(ctx *fiber.Ctx) error {
 	return nil
 }

@@ -1,6 +1,6 @@
 package models
 
-// Assignment struct to represent a singular assignment entry in HAC.
+// Assignment represents a singular assignment entry in HAC.
 type Assignment struct {
 	DueDate      string `json:"dueDate"`      //The date the assignment is due
 	AssignedDate string `json:"assignedDate"` //The date the assignment was assigned

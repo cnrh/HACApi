@@ -7,9 +7,9 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// NavigateTo navigates a collector to a specified URL, handling failures and returning HTML.
-func NavigateTo(baseCollector *colly.Collector, base, url string) (*colly.Collector, *goquery.Selection, error) {
-	//Form full URL
+// PostTo posts to a given endpoint with the given formdata, handling failures and returning HTML.
+func PostTo(baseCollector *colly.Collector, base, url string, formData map[string]string) (*colly.Collector, *goquery.Selection, error) {
+	//Form URL
 	formedUrl := "https://" + base + url
 
 	// Make a copy of the collector
@@ -32,8 +32,14 @@ func NavigateTo(baseCollector *colly.Collector, base, url string) (*colly.Collec
 		pageHTMLChan <- html
 	})
 
+	collector.OnRequest(func(req *colly.Request) {
+		req.Headers.Set("Host", base)
+		req.Headers.Set("Origin", "https://"+base)
+		req.Headers.Set("Referer", formedUrl)
+	})
+
 	// Visit page
-	err := collector.Visit(formedUrl)
+	err := collector.Post(formedUrl, formData)
 	collector.Wait()
 
 	// Return false if not avaliable, or if there was an error

@@ -1,6 +1,6 @@
 package models
 
-// Class struct to represent a class in HAC.
+// Class represents a class in HAC.
 type Class struct {
 	Name    string `json:"name"`    //The name of the class
 	Course  string `json:"course"`  //The course ID of the class

@@ -4,6 +4,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetIPR(context *fiber.Ctx) error {
+func PostIPR(ctx *fiber.Ctx) error {
 	return nil
 }

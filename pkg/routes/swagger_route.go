@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/swagger"
 )
 
+// SwaggerRoute sets up the swagger docs endpoint.
 func SwaggerRoute(app *fiber.App) {
 	// Create swagger route (docs)
 	route := app.Group("docs")

@@ -1,36 +1,19 @@
 package utils
 
 import (
-	"strings"
+	"errors"
 
 	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/gocolly/colly"
 )
 
-// makePayloadString converts a map containing payload entires into a string payload for a Colly request.
-func makePayloadString(payload *map[string]string) string {
-	//Make the builder and allocate
-	builder := strings.Builder{}
-	builder.Grow(30000)
-
-	//Convert the map into a payload string
-	for key, val := range *payload {
-		builder.WriteString(key)
-		builder.WriteString("=")
-		builder.WriteString(val)
-		builder.WriteString("&")
-	}
-
-	//Return the payload string except the last extraenous &
-	return strings.TrimSuffix(builder.String(), "&")
-}
-
 // Login logs a colly collector into home access center.
-func Login(base, username, password string) *colly.Collector {
+func Login(base, username, password string) (*colly.Collector, error) {
 	//Create a new async collector
 	collector := colly.NewCollector(
 		colly.AllowedDomains(base),
 		colly.Async(true),
+		colly.AllowURLRevisit(),
 	)
 
 	//Create a channel to get the request verification token from HTML
@@ -49,7 +32,7 @@ func Login(base, username, password string) *colly.Collector {
 	collector.Wait()
 
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	//Create clone collector, let's login for real
@@ -59,7 +42,7 @@ func Login(base, username, password string) *colly.Collector {
 	reqVerToken := <-reqVerChan
 
 	//Create payload data
-	payloadData := map[string]string{
+	payload := map[string]string{
 		"__RequestVerificationToken": reqVerToken,
 		"LogOnDetails.UserName":      username,
 		"LogOnDetails.Password":      password,
@@ -70,9 +53,6 @@ func Login(base, username, password string) *colly.Collector {
 		"tempUN":                     "",
 		"tempPW":                     "",
 	}
-
-	//Make payload string
-	payload := makePayloadString(&payloadData)
 
 	//Channel to recieve whether login failed or not
 	loginWrongChan := make(chan bool, 1)
@@ -91,7 +71,6 @@ func Login(base, username, password string) *colly.Collector {
 
 	//Set request headers
 	collector.OnRequest(func(req *colly.Request) {
-		req.Headers.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36")
 		req.Headers.Set("Host", base)
 		req.Headers.Set("Origin", "https://"+base)
 		req.Headers.Set("Referer", base)
@@ -99,14 +78,18 @@ func Login(base, username, password string) *colly.Collector {
 	})
 
 	//Post to login
-	err = collector.PostRaw(loginURL, []byte(payload))
+	err = collector.Post(loginURL, payload)
 	collector.Wait()
 
 	//Check if login went through
-	if <-loginWrongChan || err != nil {
-		return nil
+	if err != nil {
+		return nil, err
+	}
+
+	if <-loginWrongChan {
+		return nil, errors.New("invalid credentials")
 	}
 
 	//Return logged in collector
-	return collector
+	return collector, nil
 }
