@@ -1,0 +1,283 @@
+{
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "An API to fetch data from Home Access Center.",
+        "title": "HAC Information API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/classwork": {
+            "post": {
+                "description": "Returns classwork for the user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "data"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body Params",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.classworkRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ClassworkResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Pre-registers the user with the API by logging them into HAC early, and caching the cookies.\nSubsequent requests using the same credentials will use these stored cookies, leading to faster response times for other endpoints.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body Params",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.loginRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.classworkRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "example": "homeaccess.katyisd.org"
+                },
+                "markingPeriods": {
+                    "description": "The marking period to pull data from",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1,
+                        2
+                    ]
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "example": "j1732901"
+                }
+            }
+        },
+        "controllers.loginRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to register",
+                    "type": "string",
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to register",
+                    "type": "string",
+                    "example": "j1732901"
+                }
+            }
+        },
+        "models.Assignment": {
+            "type": "object",
+            "properties": {
+                "assignedDate": {
+                    "description": "The date the assignment was assigned",
+                    "type": "string"
+                },
+                "category": {
+                    "description": "The category of the assignment (major, minor, other, etc)",
+                    "type": "string"
+                },
+                "dropped": {
+                    "description": "Whether the assignment was dropped or not",
+                    "type": "boolean"
+                },
+                "dueDate": {
+                    "description": "The date the assignment is due",
+                    "type": "string"
+                },
+                "grade": {
+                    "description": "What grade the user got on the assignment",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "The name of the assignment",
+                    "type": "string"
+                },
+                "totalPoints": {
+                    "description": "The total points that could be earned on the assignment",
+                    "type": "string"
+                }
+            }
+        },
+        "models.Class": {
+            "type": "object",
+            "properties": {
+                "course": {
+                    "description": "The course ID of the class",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "The name of the class",
+                    "type": "string"
+                },
+                "period": {
+                    "description": "What period the class is for the student, relative to the current schedule",
+                    "type": "string"
+                },
+                "room": {
+                    "description": "The room number of the class",
+                    "type": "string"
+                },
+                "teacher": {
+                    "description": "The name of the teacher of the class",
+                    "type": "string"
+                }
+            }
+        },
+        "models.Classwork": {
+            "type": "object",
+            "properties": {
+                "entries": {
+                    "description": "An array of ClassworkEntry structs containing classwork for each class",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ClassworkEntry"
+                    }
+                },
+                "sixWeeks": {
+                    "description": "The marking period the classwork is for",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ClassworkEntry": {
+            "type": "object",
+            "properties": {
+                "assignments": {
+                    "description": "All the assignments currently entered for the class",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Assignment"
+                    }
+                },
+                "average": {
+                    "description": "The average grade for that class",
+                    "type": "string"
+                },
+                "class": {
+                    "description": "Class information about the entry",
+                    "$ref": "#/definitions/models.Class"
+                },
+                "position": {
+                    "description": "The position of the class, used for ordering",
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ClassworkResponse": {
+            "type": "object",
+            "properties": {
+                "classwork": {
+                    "description": "The resulting classwork",
+                    "$ref": "#/definitions/models.Classwork"
+                },
+                "err": {
+                    "description": "If there was an error",
+                    "type": "boolean"
+                },
+                "msg": {
+                    "description": "The associated message",
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "err": {
+                    "description": "If there was an error",
+                    "type": "boolean"
+                },
+                "msg": {
+                    "description": "The associated message",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "description": "Caching your login with the API",
+            "name": "auth"
+        },
+        {
+            "description": "Everything about accessing HAC information",
+            "name": "data"
+        }
+    ]
+}

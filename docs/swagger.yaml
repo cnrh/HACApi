@@ -1,0 +1,199 @@
+basePath: /api/v1
+consumes:
+- application/json
+definitions:
+  controllers.classworkRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        type: string
+      markingPeriods:
+        description: The marking period to pull data from
+        example:
+        - 1
+        - 2
+        items:
+          type: integer
+        type: array
+      password:
+        description: The password to log in with
+        example: j382704
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
+  controllers.loginRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        type: string
+      password:
+        description: The password to register
+        example: j382704
+        type: string
+      username:
+        description: The username to register
+        example: j1732901
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
+  models.Assignment:
+    properties:
+      assignedDate:
+        description: The date the assignment was assigned
+        type: string
+      category:
+        description: The category of the assignment (major, minor, other, etc)
+        type: string
+      dropped:
+        description: Whether the assignment was dropped or not
+        type: boolean
+      dueDate:
+        description: The date the assignment is due
+        type: string
+      grade:
+        description: What grade the user got on the assignment
+        type: string
+      name:
+        description: The name of the assignment
+        type: string
+      totalPoints:
+        description: The total points that could be earned on the assignment
+        type: string
+    type: object
+  models.Class:
+    properties:
+      course:
+        description: The course ID of the class
+        type: string
+      name:
+        description: The name of the class
+        type: string
+      period:
+        description: What period the class is for the student, relative to the current
+          schedule
+        type: string
+      room:
+        description: The room number of the class
+        type: string
+      teacher:
+        description: The name of the teacher of the class
+        type: string
+    type: object
+  models.Classwork:
+    properties:
+      entries:
+        description: An array of ClassworkEntry structs containing classwork for each
+          class
+        items:
+          $ref: '#/definitions/models.ClassworkEntry'
+        type: array
+      sixWeeks:
+        description: The marking period the classwork is for
+        type: integer
+    type: object
+  models.ClassworkEntry:
+    properties:
+      assignments:
+        description: All the assignments currently entered for the class
+        items:
+          $ref: '#/definitions/models.Assignment'
+        type: array
+      average:
+        description: The average grade for that class
+        type: string
+      class:
+        $ref: '#/definitions/models.Class'
+        description: Class information about the entry
+      position:
+        description: The position of the class, used for ordering
+        type: integer
+    type: object
+  models.ClassworkResponse:
+    properties:
+      classwork:
+        $ref: '#/definitions/models.Classwork'
+        description: The resulting classwork
+      err:
+        description: If there was an error
+        type: boolean
+      msg:
+        description: The associated message
+        type: string
+    type: object
+  models.LoginResponse:
+    properties:
+      err:
+        description: If there was an error
+        type: boolean
+      msg:
+        description: The associated message
+        type: string
+    type: object
+info:
+  contact: {}
+  description: An API to fetch data from Home Access Center.
+  title: HAC Information API
+  version: "1.0"
+paths:
+  /classwork:
+    post:
+      consumes:
+      - application/json
+      description: Returns classwork for the user.
+      parameters:
+      - description: Body Params
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/controllers.classworkRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ClassworkResponse'
+      tags:
+      - data
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Pre-registers the user with the API by logging them into HAC early, and caching the cookies.
+        Subsequent requests using the same credentials will use these stored cookies, leading to faster response times for other endpoints.
+      parameters:
+      - description: Body Params
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/controllers.loginRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+      tags:
+      - auth
+produces:
+- application/json
+swagger: "2.0"
+tags:
+- description: Caching your login with the API
+  name: auth
+- description: Everything about accessing HAC information
+  name: data
