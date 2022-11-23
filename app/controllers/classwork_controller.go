@@ -90,7 +90,7 @@ func PostClasswork(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"err":       true,
-			"msg":       "Classwork not found. Might be an internal error.",
+			"msg":       "Classwork not found. Might be an internal error",
 			"classwork": nil,
 		})
 	}

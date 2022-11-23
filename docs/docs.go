@@ -56,7 +56,7 @@ const docTemplate = `{
         },
         "/ipr": {
             "post": {
-                "description": "Returns the IPR(s) for the user. If the date parameter is not passed into the body, the most recent IPR is returned.\nIt is important the format of the date follows the format \"01/02/2006\" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.\nFor all possible dates, refer to the \"/ipr/all\" endpoint.",
+                "description": "Returns the IPR(s) for the user. If the date parameter is not passed into the body or is invalid, the most recent IPR is returned.\nIt is important the format of the date follows the format \"01/02/2006\" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.\nFor all possible dates, refer to the \"/ipr/all\" endpoint.",
                 "consumes": [
                     "application/json"
                 ],

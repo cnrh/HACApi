@@ -257,7 +257,7 @@ paths:
       consumes:
       - application/json
       description: |-
-        Returns the IPR(s) for the user. If the date parameter is not passed into the body, the most recent IPR is returned.
+        Returns the IPR(s) for the user. If the date parameter is not passed into the body or is invalid, the most recent IPR is returned.
         It is important the format of the date follows the format "01/02/2006" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.
         For all possible dates, refer to the "/ipr/all" endpoint.
       parameters:

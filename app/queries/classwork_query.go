@@ -14,6 +14,8 @@ import (
 	"github.com/gocolly/colly"
 )
 
+// GetClasswork accepts a collector, base, and a list of marking periods, and returns an array of parsed classwork
+// objects for the inputted marking periods.
 func GetClasswork(loginCollector *colly.Collector, base string, markingPeriods []int) ([]models.Classwork, error) {
 	//Get initial page
 	collector, html, err := utils.NavigateTo(loginCollector, base, repository.CLASSWORK_ROUTE)

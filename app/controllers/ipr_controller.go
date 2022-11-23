@@ -21,7 +21,7 @@ type iprRequestBody struct {
 }
 
 // PostIPR handles POST requests to the IPR endpoint.
-// @Description Returns the IPR(s) for the user. If the date parameter is not passed into the body, the most recent IPR is returned.
+// @Description Returns the IPR(s) for the user. If the date parameter is not passed into the body or is invalid, the most recent IPR is returned.
 // @Description It is important the format of the date follows the format "01/02/2006" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.
 // @Description For all possible dates, refer to the "/ipr/all" endpoint.
 // @Tags        ipr
@@ -57,9 +57,7 @@ func PostIPR(ctx *fiber.Ctx) error {
 	//Check for valid date
 	date, err := time.Parse("01/02/2006", params.Date)
 
-	if err != nil {
-		bodyParamsValid = false
-	} else {
+	if err == nil {
 		parsedDate = date
 	}
 
@@ -94,7 +92,7 @@ func PostIPR(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"err": true,
-			"msg": "Classwork not found. Might be an internal error.",
+			"msg": "IPR not found. Might be an internal error",
 			"ipr": nil,
 		})
 	}
@@ -122,5 +120,66 @@ type iprAllRequestBody struct {
 // @Success     200 {object} models.IPRResponse
 // @Router      /ipr/all [post]
 func PostIPRAll(ctx *fiber.Ctx) error {
-	return nil
+	//Parse body
+	params := new(iprAllRequestBody)
+
+	//Error out if fail to parse body
+	if err := ctx.BodyParser(params); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"err": true,
+			"msg": "Bad body params",
+			"ipr": nil,
+		})
+	}
+
+	//Check for body param validity
+	bodyParamsValid := true
+
+	//Confirm no required body params are empty
+	if params.Username == "" || params.Password == "" || params.Base == "" {
+		bodyParamsValid = false
+	}
+
+	//If body params are invalid, error out
+	if !bodyParamsValid {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"err": true,
+			"msg": "Bad body params",
+			"ipr": nil,
+		})
+	}
+
+	//Form cache key
+	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
+
+	//Try logging in, or grab cached collector
+	collector := cache.CurrentCache().Get(cacheKey)
+
+	//Error out if login fails
+	if collector == nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"err": true,
+			"msg": "Invalid username/password/base",
+			"ipr": nil,
+		})
+	}
+
+	//Get IPRs
+	iprs, err := queries.GetAllIPRs(collector.Value(), params.Base, params.DatesOnly)
+
+	//Check if returned value was nil
+	if err != nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"err": true,
+			"msg": "IPRs not found. Might be an internal error",
+			"ipr": nil,
+		})
+	}
+
+	//All is well
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"err": false,
+		"msg": "",
+		"ipr": iprs,
+	})
 }
