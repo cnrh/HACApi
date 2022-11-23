@@ -24,7 +24,7 @@ const docTemplate = `{
     "paths": {
         "/classwork": {
             "post": {
-                "description": "Returns classwork for the user.",
+                "description": "Returns classwork for the user for the marking periods specified.\nIf no marking periods are specified, the classwork for the current marking period is returned.",
                 "consumes": [
                     "application/json"
                 ],
@@ -32,7 +32,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "data"
+                    "classwork"
                 ],
                 "parameters": [
                     {
@@ -49,6 +49,70 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.ClassworkResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ipr": {
+            "post": {
+                "description": "Returns the IPR(s) for the user. If the date parameter is not passed into the body, the most recent IPR is returned.\nIt is important the format of the date follows the format \"01/02/2006\" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.\nFor all possible dates, refer to the \"/ipr/all\" endpoint.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ipr"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body Params",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.iprRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.IPRResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/ipr/all": {
+            "post": {
+                "description": "Returns all the IPRs for the user, or just the dates depending on the DatesOnly parameter's value in the body.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ipr"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body Params",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.iprAllRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.IPRResponse"
                         }
                     }
                 }
@@ -111,6 +175,67 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "example": "j1732901"
+                }
+            }
+        },
+        "controllers.iprAllRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "example": "homeaccess.katyisd.org"
+                },
+                "datesOnly": {
+                    "description": "Whether to return only dates or all the IPRs",
+                    "type": "boolean",
+                    "default": false,
+                    "example": true
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "example": "j1732901"
+                }
+            }
+        },
+        "controllers.iprRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "example": "homeaccess.katyisd.org"
+                },
+                "date": {
+                    "description": "The date of the IPR to return",
+                    "type": "string",
+                    "example": "09/06/2022"
                 },
                 "password": {
                     "description": "The password to log in with",
@@ -252,11 +377,63 @@ const docTemplate = `{
             "properties": {
                 "classwork": {
                     "description": "The resulting classwork",
-                    "$ref": "#/definitions/models.Classwork"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Classwork"
+                    }
                 },
                 "err": {
                     "description": "If there was an error",
                     "type": "boolean"
+                },
+                "msg": {
+                    "description": "The associated message",
+                    "type": "string"
+                }
+            }
+        },
+        "models.IPR": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "description": "The date the IPR was submitted",
+                    "type": "string"
+                },
+                "entries": {
+                    "description": "An array representing all the IPR entries",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.IPREntry"
+                    }
+                }
+            }
+        },
+        "models.IPREntry": {
+            "type": "object",
+            "properties": {
+                "class": {
+                    "description": "Information about the class related to the IPREntry",
+                    "$ref": "#/definitions/models.Class"
+                },
+                "grade": {
+                    "description": "The average at the moment the progress report was submitted",
+                    "type": "string"
+                }
+            }
+        },
+        "models.IPRResponse": {
+            "type": "object",
+            "properties": {
+                "err": {
+                    "description": "If there was an error",
+                    "type": "boolean"
+                },
+                "ipr": {
+                    "description": "The resulting IPR(s)",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.IPR"
+                    }
                 },
                 "msg": {
                     "description": "The associated message",
@@ -280,12 +457,16 @@ const docTemplate = `{
     },
     "tags": [
         {
-            "description": "Caching your login with the API",
+            "description": "Caching a login with the API",
             "name": "auth"
         },
         {
-            "description": "Everything about accessing HAC information",
-            "name": "data"
+            "description": "Get data about classwork",
+            "name": "classwork"
+        },
+        {
+            "description": "Get data about interim progress report(s)",
+            "name": "ipr"
         }
     ]
 }`

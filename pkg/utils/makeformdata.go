@@ -61,3 +61,19 @@ func MakeClassworkFormData(mp, viewstate, viewstategen, eventvalidation string) 
 		"ctl00$plnMain$ddlOrderBy":                   "Class",
 	}
 }
+
+func MakeIPRFormData(date, viewstate, viewstategen, eventvalidation string) map[string]string {
+	return map[string]string{
+		"__EVENTTARGET":                  "ctl00$plnMain$ddlIPRDates",
+		"__EVENTARGUMENT":                "",
+		"__LASTFOCUS":                    "",
+		"__VIEWSTATE":                    viewstate,
+		"__VIEWSTATEGENERATOR":           viewstategen,
+		"__EVENTVALIDATION":              eventvalidation,
+		"ctl00$plnMain$hdnTitle":         "Interim Progress Report For ",
+		"ctl00$plnMain$ddlIPRDates":      date,
+		"ctl00$plnMain$hdnMessage":       "Interim Progress information could not be found for this date.",
+		"ctl00$plnMain$hdnMessage1":      "This student does not have any Interim Progress Reports for this school year.",
+		"ctl00$plnMain$hdnTitleNoRecord": "Interim Progress Report",
+	}
+}

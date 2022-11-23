@@ -29,6 +29,53 @@ definitions:
     - password
     - username
     type: object
+  controllers.iprAllRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        type: string
+      datesOnly:
+        default: false
+        description: Whether to return only dates or all the IPRs
+        example: true
+        type: boolean
+      password:
+        description: The password to log in with
+        example: j382704
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
+  controllers.iprRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        type: string
+      date:
+        description: The date of the IPR to return
+        example: 09/06/2022
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
   controllers.loginRequestBody:
     properties:
       base:
@@ -123,11 +170,47 @@ definitions:
   models.ClassworkResponse:
     properties:
       classwork:
-        $ref: '#/definitions/models.Classwork'
         description: The resulting classwork
+        items:
+          $ref: '#/definitions/models.Classwork'
+        type: array
       err:
         description: If there was an error
         type: boolean
+      msg:
+        description: The associated message
+        type: string
+    type: object
+  models.IPR:
+    properties:
+      date:
+        description: The date the IPR was submitted
+        type: string
+      entries:
+        description: An array representing all the IPR entries
+        items:
+          $ref: '#/definitions/models.IPREntry'
+        type: array
+    type: object
+  models.IPREntry:
+    properties:
+      class:
+        $ref: '#/definitions/models.Class'
+        description: Information about the class related to the IPREntry
+      grade:
+        description: The average at the moment the progress report was submitted
+        type: string
+    type: object
+  models.IPRResponse:
+    properties:
+      err:
+        description: If there was an error
+        type: boolean
+      ipr:
+        description: The resulting IPR(s)
+        items:
+          $ref: '#/definitions/models.IPR'
+        type: array
       msg:
         description: The associated message
         type: string
@@ -151,7 +234,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: Returns classwork for the user.
+      description: |-
+        Returns classwork for the user for the marking periods specified.
+        If no marking periods are specified, the classwork for the current marking period is returned.
       parameters:
       - description: Body Params
         in: body
@@ -166,7 +251,51 @@ paths:
           schema:
             $ref: '#/definitions/models.ClassworkResponse'
       tags:
-      - data
+      - classwork
+  /ipr:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Returns the IPR(s) for the user. If the date parameter is not passed into the body, the most recent IPR is returned.
+        It is important the format of the date follows the format "01/02/2006" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.
+        For all possible dates, refer to the "/ipr/all" endpoint.
+      parameters:
+      - description: Body Params
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/controllers.iprRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IPRResponse'
+      tags:
+      - ipr
+  /ipr/all:
+    post:
+      consumes:
+      - application/json
+      description: Returns all the IPRs for the user, or just the dates depending
+        on the DatesOnly parameter's value in the body.
+      parameters:
+      - description: Body Params
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/controllers.iprAllRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.IPRResponse'
+      tags:
+      - ipr
   /login:
     post:
       consumes:
@@ -193,7 +322,9 @@ produces:
 - application/json
 swagger: "2.0"
 tags:
-- description: Caching your login with the API
+- description: Caching a login with the API
   name: auth
-- description: Everything about accessing HAC information
-  name: data
+- description: Get data about classwork
+  name: classwork
+- description: Get data about interim progress report(s)
+  name: ipr

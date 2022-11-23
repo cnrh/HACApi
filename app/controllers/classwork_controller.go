@@ -11,19 +11,15 @@ import (
 // classworkRequestBody represents the body that is to be passed with
 // the POST request to the classwork endpoint.
 type classworkRequestBody struct {
-	//The username to log in with
-	Username string `json:"username" validate:"required" example:"j1732901"`
-	//The password to log in with
-	Password string `json:"password" validate:"required" example:"j382704"`
-	//The base URL for the PowerSchool HAC service
-	Base string `json:"base" validate:"required" example:"homeaccess.katyisd.org"`
+	baseRequestBody
 	//The marking period to pull data from
 	MarkingPeriods []int `json:"markingPeriods" validate:"optional" example:"1,2"`
 }
 
 // PostClasswork handles POST requests to the classwork endpoint.
-// @Description Returns classwork for the user.
-// @Tags        data
+// @Description Returns classwork for the user for the marking periods specified.
+// @Description If no marking periods are specified, the classwork for the current marking period is returned.
+// @Tags        classwork
 // @Param       request body classworkRequestBody false "Body Params"
 // @Accept      json
 // @Produce     json
@@ -78,6 +74,7 @@ func PostClasswork(ctx *fiber.Ctx) error {
 	//Try logging in, or grab cached collector
 	collector := cache.CurrentCache().Get(cacheKey)
 
+	//Error out if login fails
 	if collector == nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":       true,
@@ -87,10 +84,10 @@ func PostClasswork(ctx *fiber.Ctx) error {
 	}
 
 	//Get classwork
-	classwork := queries.GetClasswork(collector.Value(), params.Base, params.MarkingPeriods)
+	classwork, err := queries.GetClasswork(collector.Value(), params.Base, params.MarkingPeriods)
 
 	//Check if returned value was nil
-	if classwork == nil {
+	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"err":       true,
 			"msg":       "Classwork not found. Might be an internal error.",

@@ -19,10 +19,13 @@ import (
 // @produce         json
 //
 // @tag.name        auth
-// @tag.description Caching your login with the API
+// @tag.description Caching a login with the API
 //
-// @tag.name        data
-// @tag.description Everything about accessing HAC information
+// @tag.name        classwork
+// @tag.description Get data about classwork
+//
+// @tag.name        ipr
+// @tag.description Get data about interim progress report(s)
 
 func main() {
 	//Make new config

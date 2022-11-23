@@ -11,10 +11,23 @@ func PublicRoutes(app *fiber.App) {
 	route := app.Group("/api/v1")
 
 	//Routes for POST methods
-	route.Post("/login", controllers.PostLogin)
-	route.Post("/classwork", controllers.PostClasswork)   //post classwork
-	route.Post("/ipr", controllers.PostIPR)               //post interim progress report
+
+	//login
+	route.Post("/login", controllers.PostLogin) //register login with the API
+
+	//classwork
+	route.Post("/classwork", controllers.PostClasswork) //post classwork
+
+	//ipr
+	route.Post("/ipr", controllers.PostIPR)        //post interim progress report
+	route.Post("/ipr/all", controllers.PostIPRAll) //post all interim progress reports
+
+	//report card
 	route.Post("/reportcard", controllers.PostReportCard) //post report card
-	route.Post("/schedule", controllers.PostSchedule)     //post schedule
+
+	//schedule
+	route.Post("/schedule", controllers.PostSchedule) //post schedule
+
+	//transcript
 	route.Post("/transcript", controllers.PostTranscript) //post transcript
 }
