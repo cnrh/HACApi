@@ -8,9 +8,11 @@ import (
 	"github.com/gocolly/colly"
 )
 
+// GetReportCard accepts a collector and a base, and returns a parsed report card for the
+// user logged into the collector.
 func GetReportCard(loginCollector *colly.Collector, base string) (models.ReportCard, error) {
-	//Create report card model
-	reportCard := models.ReportCard{}
+	//Create empty report card model
+	var reportCard models.ReportCard
 
 	//Get initial page
 	_, html, err := utils.NavigateTo(loginCollector, base, repository.REPORT_CARD_ROUTE)
@@ -21,7 +23,7 @@ func GetReportCard(loginCollector *colly.Collector, base string) (models.ReportC
 	}
 
 	//Parse report card HTML
-	recievedReportCard := parsers.ParseReportCard(html)
+	reportCard = parsers.ParseReportCard(html)
 
-	return recievedReportCard, nil
+	return reportCard, nil
 }

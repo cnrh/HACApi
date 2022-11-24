@@ -173,6 +173,38 @@
                     }
                 }
             }
+        },
+        "/schedule": {
+            "post": {
+                "description": "Returns the schedule for the user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body params",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.scheduleRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ScheduleResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -299,6 +331,31 @@
             }
         },
         "controllers.reportCardRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "example": "j1732901"
+                }
+            }
+        },
+        "controllers.scheduleRequestBody": {
             "type": "object",
             "required": [
                 "base",
@@ -571,6 +628,66 @@
                 "reportCard": {
                     "description": "The resulting report card",
                     "$ref": "#/definitions/models.ReportCard"
+                }
+            }
+        },
+        "models.Schedule": {
+            "type": "object",
+            "properties": {
+                "entries": {
+                    "description": "An array containing all the schedule entries",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ScheduleEntry"
+                    }
+                }
+            }
+        },
+        "models.ScheduleEntry": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "description": "Whether the class is active or not",
+                    "type": "boolean"
+                },
+                "building": {
+                    "description": "The building the class is in",
+                    "type": "string"
+                },
+                "class": {
+                    "description": "Information about the Class related to the Schedule",
+                    "$ref": "#/definitions/models.Class"
+                },
+                "days": {
+                    "description": "The days the class is active for",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "markingPeriods": {
+                    "description": "The marking periods the class is active for",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "models.ScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "err": {
+                    "description": "If there was an error",
+                    "type": "boolean"
+                },
+                "msg": {
+                    "description": "The associated message",
+                    "type": "string"
+                },
+                "schedule": {
+                    "description": "The resulting schedule",
+                    "$ref": "#/definitions/models.Schedule"
                 }
             }
         },

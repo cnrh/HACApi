@@ -113,8 +113,8 @@ type iprAllRequestBody struct {
 
 // PostIPRAll handles POST requests to the IPR/All endpoint.
 // @Description Returns all the IPRs for the user, or just the dates depending on the DatesOnly parameter's value in the body.
-// @Tags ipr
-// @Param request body iprAllRequestBody false "Body Params"
+// @Tags        ipr
+// @Param       request body iprAllRequestBody false "Body Params"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} models.IPRResponse

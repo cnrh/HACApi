@@ -26,3 +26,8 @@ type ReportCardResponse struct {
 	HTTPError             //Error, if one is attached to the response
 	ReportCard ReportCard `json:"reportCard"` //The resulting report card
 }
+
+type ScheduleResponse struct {
+	HTTPError          //Error, if one is attached to the response
+	Schedule  Schedule `json:"schedule"` //The resulting schedule
+}

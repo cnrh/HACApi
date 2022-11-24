@@ -8,14 +8,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// requestCardRequestBody represents the
+// request body that is to be passed in
+// with the POST request to this endpoint.
 type reportCardRequestBody struct {
 	baseRequestBody
 }
 
 // PostReportCard handles POST requests to the report card endpoint.
 // @Description Returns report card data for the user.
-// @Tags reportcard
-// @Param request body reportCardRequestBody false "Body params"
+// @Tags        reportcard
+// @Param       request body reportCardRequestBody false "Body params"
 // @Accept      json
 // @Produce     json
 // @Success     200 {object} models.ReportCardResponse

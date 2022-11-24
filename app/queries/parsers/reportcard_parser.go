@@ -9,7 +9,7 @@ import (
 )
 
 // ParseReportCard takes in raw HTML and parses it into a report
-// card model
+// card model.
 func ParseReportCard(html *goquery.Selection) models.ReportCard {
 	//Make struct to store parsed report card
 	reportCard := models.ReportCard{}

@@ -114,6 +114,25 @@ definitions:
     - password
     - username
     type: object
+  controllers.scheduleRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
   models.Absences:
     properties:
       excusedAbsence:
@@ -290,6 +309,48 @@ definitions:
         $ref: '#/definitions/models.ReportCard'
         description: The resulting report card
     type: object
+  models.Schedule:
+    properties:
+      entries:
+        description: An array containing all the schedule entries
+        items:
+          $ref: '#/definitions/models.ScheduleEntry'
+        type: array
+    type: object
+  models.ScheduleEntry:
+    properties:
+      active:
+        description: Whether the class is active or not
+        type: boolean
+      building:
+        description: The building the class is in
+        type: string
+      class:
+        $ref: '#/definitions/models.Class'
+        description: Information about the Class related to the Schedule
+      days:
+        description: The days the class is active for
+        items:
+          type: string
+        type: array
+      markingPeriods:
+        description: The marking periods the class is active for
+        items:
+          type: string
+        type: array
+    type: object
+  models.ScheduleResponse:
+    properties:
+      err:
+        description: If there was an error
+        type: boolean
+      msg:
+        description: The associated message
+        type: string
+      schedule:
+        $ref: '#/definitions/models.Schedule'
+        description: The resulting schedule
+    type: object
   models.SixWeeksGrades:
     properties:
       exam1:
@@ -442,6 +503,26 @@ paths:
             $ref: '#/definitions/models.ReportCardResponse'
       tags:
       - reportcard
+  /schedule:
+    post:
+      consumes:
+      - application/json
+      description: Returns the schedule for the user.
+      parameters:
+      - description: Body params
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/controllers.scheduleRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ScheduleResponse'
+      tags:
+      - schedule
 produces:
 - application/json
 swagger: "2.0"
