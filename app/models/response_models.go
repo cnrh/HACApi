@@ -19,3 +19,10 @@ type IPRResponse struct {
 	HTTPError       //Error, if one is attached to the response
 	IPR       []IPR `json:"ipr"` //The resulting IPR(s)
 }
+
+// ReportCardResponse represents a JSON response
+// to the Report Card POST request
+type ReportCardResponse struct {
+	HTTPError             //Error, if one is attached to the response
+	ReportCard ReportCard `json:"reportCard"` //The resulting report card
+}

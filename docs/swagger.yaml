@@ -95,6 +95,36 @@ definitions:
     - password
     - username
     type: object
+  controllers.reportCardRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
+  models.Absences:
+    properties:
+      excusedAbsence:
+        type: string
+      excusedTardy:
+        type: string
+      unexcusedAbsence:
+        type: string
+      unexcusedTardy:
+        type: string
+    type: object
   models.Assignment:
     properties:
       assignedDate:
@@ -224,6 +254,80 @@ definitions:
         description: The associated message
         type: string
     type: object
+  models.ReportCard:
+    properties:
+      entries:
+        items:
+          $ref: '#/definitions/models.ReportCardEntry'
+        type: array
+    type: object
+  models.ReportCardEntry:
+    properties:
+      absences:
+        $ref: '#/definitions/models.Absences'
+      attemptedCredit:
+        type: string
+      averages:
+        $ref: '#/definitions/models.SixWeeksGrades'
+      class:
+        $ref: '#/definitions/models.Class'
+      comments:
+        $ref: '#/definitions/models.SixWeeksOther'
+      conduct:
+        $ref: '#/definitions/models.SixWeeksOther'
+      earnedCredit:
+        type: string
+    type: object
+  models.ReportCardResponse:
+    properties:
+      err:
+        description: If there was an error
+        type: boolean
+      msg:
+        description: The associated message
+        type: string
+      reportCard:
+        $ref: '#/definitions/models.ReportCard'
+        description: The resulting report card
+    type: object
+  models.SixWeeksGrades:
+    properties:
+      exam1:
+        type: string
+      exam2:
+        type: string
+      fifth:
+        type: string
+      first:
+        type: string
+      fourth:
+        type: string
+      second:
+        type: string
+      sem1:
+        type: string
+      sem2:
+        type: string
+      sixth:
+        type: string
+      third:
+        type: string
+    type: object
+  models.SixWeeksOther:
+    properties:
+      fifth:
+        type: string
+      first:
+        type: string
+      fourth:
+        type: string
+      second:
+        type: string
+      sixth:
+        type: string
+      third:
+        type: string
+    type: object
 info:
   contact: {}
   description: An API to fetch data from Home Access Center.
@@ -235,7 +339,7 @@ paths:
       consumes:
       - application/json
       description: |-
-        Returns classwork for the user for the marking periods specified.
+        Returns classwork for the marking periods specified.
         If no marking periods are specified, the classwork for the current marking period is returned.
       parameters:
       - description: Body Params
@@ -318,6 +422,26 @@ paths:
             $ref: '#/definitions/models.LoginResponse'
       tags:
       - auth
+  /reportcard:
+    post:
+      consumes:
+      - application/json
+      description: Returns report card data for the user.
+      parameters:
+      - description: Body params
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/controllers.reportCardRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ReportCardResponse'
+      tags:
+      - reportcard
 produces:
 - application/json
 swagger: "2.0"
@@ -328,3 +452,5 @@ tags:
   name: classwork
 - description: Get data about interim progress report(s)
   name: ipr
+- description: Get data about the report card
+  name: reportcard

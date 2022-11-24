@@ -26,6 +26,9 @@ import (
 //
 // @tag.name        ipr
 // @tag.description Get data about interim progress report(s)
+//
+// @tag.name reportcard
+// @tag.description Get data about the report card
 
 func main() {
 	//Make new config

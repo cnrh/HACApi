@@ -24,7 +24,7 @@ const docTemplate = `{
     "paths": {
         "/classwork": {
             "post": {
-                "description": "Returns classwork for the user for the marking periods specified.\nIf no marking periods are specified, the classwork for the current marking period is returned.",
+                "description": "Returns classwork for the marking periods specified.\nIf no marking periods are specified, the classwork for the current marking period is returned.",
                 "consumes": [
                     "application/json"
                 ],
@@ -145,6 +145,38 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.LoginResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/reportcard": {
+            "post": {
+                "description": "Returns report card data for the user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reportcard"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body params",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.reportCardRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ReportCardResponse"
                         }
                     }
                 }
@@ -271,6 +303,48 @@ const docTemplate = `{
                     "description": "The username to register",
                     "type": "string",
                     "example": "j1732901"
+                }
+            }
+        },
+        "controllers.reportCardRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "example": "j1732901"
+                }
+            }
+        },
+        "models.Absences": {
+            "type": "object",
+            "properties": {
+                "excusedAbsence": {
+                    "type": "string"
+                },
+                "excusedTardy": {
+                    "type": "string"
+                },
+                "unexcusedAbsence": {
+                    "type": "string"
+                },
+                "unexcusedTardy": {
+                    "type": "string"
                 }
             }
         },
@@ -453,6 +527,118 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "models.ReportCard": {
+            "type": "object",
+            "properties": {
+                "entries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ReportCardEntry"
+                    }
+                }
+            }
+        },
+        "models.ReportCardEntry": {
+            "type": "object",
+            "properties": {
+                "absences": {
+                    "$ref": "#/definitions/models.Absences"
+                },
+                "attemptedCredit": {
+                    "type": "string"
+                },
+                "averages": {
+                    "$ref": "#/definitions/models.SixWeeksGrades"
+                },
+                "class": {
+                    "$ref": "#/definitions/models.Class"
+                },
+                "comments": {
+                    "$ref": "#/definitions/models.SixWeeksOther"
+                },
+                "conduct": {
+                    "$ref": "#/definitions/models.SixWeeksOther"
+                },
+                "earnedCredit": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ReportCardResponse": {
+            "type": "object",
+            "properties": {
+                "err": {
+                    "description": "If there was an error",
+                    "type": "boolean"
+                },
+                "msg": {
+                    "description": "The associated message",
+                    "type": "string"
+                },
+                "reportCard": {
+                    "description": "The resulting report card",
+                    "$ref": "#/definitions/models.ReportCard"
+                }
+            }
+        },
+        "models.SixWeeksGrades": {
+            "type": "object",
+            "properties": {
+                "exam1": {
+                    "type": "string"
+                },
+                "exam2": {
+                    "type": "string"
+                },
+                "fifth": {
+                    "type": "string"
+                },
+                "first": {
+                    "type": "string"
+                },
+                "fourth": {
+                    "type": "string"
+                },
+                "second": {
+                    "type": "string"
+                },
+                "sem1": {
+                    "type": "string"
+                },
+                "sem2": {
+                    "type": "string"
+                },
+                "sixth": {
+                    "type": "string"
+                },
+                "third": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SixWeeksOther": {
+            "type": "object",
+            "properties": {
+                "fifth": {
+                    "type": "string"
+                },
+                "first": {
+                    "type": "string"
+                },
+                "fourth": {
+                    "type": "string"
+                },
+                "second": {
+                    "type": "string"
+                },
+                "sixth": {
+                    "type": "string"
+                },
+                "third": {
+                    "type": "string"
+                }
+            }
         }
     },
     "tags": [
@@ -467,6 +653,10 @@ const docTemplate = `{
         {
             "description": "Get data about interim progress report(s)",
             "name": "ipr"
+        },
+        {
+            "description": "Get data about the report card",
+            "name": "reportcard"
         }
     ]
 }`

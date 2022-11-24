@@ -17,7 +17,7 @@ type classworkRequestBody struct {
 }
 
 // PostClasswork handles POST requests to the classwork endpoint.
-// @Description Returns classwork for the user for the marking periods specified.
+// @Description Returns classwork for the marking periods specified.
 // @Description If no marking periods are specified, the classwork for the current marking period is returned.
 // @Tags        classwork
 // @Param       request body classworkRequestBody false "Body Params"
