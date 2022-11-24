@@ -133,6 +133,25 @@ definitions:
     - password
     - username
     type: object
+  controllers.transcriptRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
   models.Absences:
     properties:
       excusedAbsence:
@@ -389,6 +408,82 @@ definitions:
       third:
         type: string
     type: object
+  models.Transcript:
+    properties:
+      groups:
+        description: All the transcript groups
+        items:
+          $ref: '#/definitions/models.TranscriptGroup'
+        type: array
+      unweighted:
+        $ref: '#/definitions/models.TranscriptGPA'
+        description: The unweighted GPA
+      weighted:
+        $ref: '#/definitions/models.TranscriptGPA'
+        description: The weighted GPA
+    type: object
+  models.TranscriptGPA:
+    properties:
+      gpa:
+        description: The GPA
+        type: string
+      quartile:
+        description: The class quartile
+        type: string
+      rank:
+        description: The class rank
+        type: string
+      type:
+        description: The type of GPA (unweighted/weighted)
+        type: string
+    type: object
+  models.TranscriptGroup:
+    properties:
+      building:
+        description: The building in which the classes in the group weree taken
+        type: string
+      entries:
+        description: The individual class entries for this group
+        items:
+          $ref: '#/definitions/models.TranscriptGroupEntry'
+        type: array
+      gradeLevel:
+        description: The grade level the group represents data for
+        type: string
+      semester:
+        description: The semester the group represents data for
+        type: string
+      totalCredit:
+        description: The total credit earned for all the entries in this group
+        type: string
+      year:
+        description: The school year the group represents data for
+        type: string
+    type: object
+  models.TranscriptGroupEntry:
+    properties:
+      average:
+        description: The average grade for the class
+        type: string
+      class:
+        $ref: '#/definitions/models.Class'
+        description: The class related to the entry
+      credit:
+        description: The credit earned for the class
+        type: string
+    type: object
+  models.TranscriptResponse:
+    properties:
+      err:
+        description: If there was an error
+        type: boolean
+      msg:
+        description: The associated message
+        type: string
+      transcript:
+        $ref: '#/definitions/models.Transcript'
+        description: The resulting transcript
+    type: object
 info:
   contact: {}
   description: An API to fetch data from Home Access Center.
@@ -523,6 +618,26 @@ paths:
             $ref: '#/definitions/models.ScheduleResponse'
       tags:
       - schedule
+  /transcript:
+    post:
+      consumes:
+      - application/json
+      description: Returns the transcript for the user.
+      parameters:
+      - description: Body params
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/controllers.transcriptRequestBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TranscriptResponse'
+      tags:
+      - transcript
 produces:
 - application/json
 swagger: "2.0"
@@ -535,3 +650,7 @@ tags:
   name: ipr
 - description: Get data about the report card
   name: reportcard
+- description: Get data about the schedule
+  name: schedule
+- description: Get data about the transcript
+  name: transcript

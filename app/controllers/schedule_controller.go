@@ -8,6 +8,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// scheduleRequestBody represents the
+// request body to be passed in with a
+// POST request to the endpoint.
 type scheduleRequestBody struct {
 	baseRequestBody
 }

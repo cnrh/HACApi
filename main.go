@@ -29,6 +29,12 @@ import (
 //
 // @tag.name        reportcard
 // @tag.description Get data about the report card
+//
+// @tag.name        schedule
+// @tag.description Get data about the schedule
+//
+// @tag.name        transcript
+// @tag.description Get data about the transcript
 
 func main() {
 	//Make new config

@@ -205,6 +205,38 @@
                     }
                 }
             }
+        },
+        "/transcript": {
+            "post": {
+                "description": "Returns the transcript for the user.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transcript"
+                ],
+                "parameters": [
+                    {
+                        "description": "Body params",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.transcriptRequestBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TranscriptResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -356,6 +388,31 @@
             }
         },
         "controllers.scheduleRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "example": "j1732901"
+                }
+            }
+        },
+        "controllers.transcriptRequestBody": {
             "type": "object",
             "required": [
                 "base",
@@ -748,6 +805,113 @@
                     "type": "string"
                 }
             }
+        },
+        "models.Transcript": {
+            "type": "object",
+            "properties": {
+                "groups": {
+                    "description": "All the transcript groups",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TranscriptGroup"
+                    }
+                },
+                "unweighted": {
+                    "description": "The unweighted GPA",
+                    "$ref": "#/definitions/models.TranscriptGPA"
+                },
+                "weighted": {
+                    "description": "The weighted GPA",
+                    "$ref": "#/definitions/models.TranscriptGPA"
+                }
+            }
+        },
+        "models.TranscriptGPA": {
+            "type": "object",
+            "properties": {
+                "gpa": {
+                    "description": "The GPA",
+                    "type": "string"
+                },
+                "quartile": {
+                    "description": "The class quartile",
+                    "type": "string"
+                },
+                "rank": {
+                    "description": "The class rank",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "The type of GPA (unweighted/weighted)",
+                    "type": "string"
+                }
+            }
+        },
+        "models.TranscriptGroup": {
+            "type": "object",
+            "properties": {
+                "building": {
+                    "description": "The building in which the classes in the group weree taken",
+                    "type": "string"
+                },
+                "entries": {
+                    "description": "The individual class entries for this group",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TranscriptGroupEntry"
+                    }
+                },
+                "gradeLevel": {
+                    "description": "The grade level the group represents data for",
+                    "type": "string"
+                },
+                "semester": {
+                    "description": "The semester the group represents data for",
+                    "type": "string"
+                },
+                "totalCredit": {
+                    "description": "The total credit earned for all the entries in this group",
+                    "type": "string"
+                },
+                "year": {
+                    "description": "The school year the group represents data for",
+                    "type": "string"
+                }
+            }
+        },
+        "models.TranscriptGroupEntry": {
+            "type": "object",
+            "properties": {
+                "average": {
+                    "description": "The average grade for the class",
+                    "type": "string"
+                },
+                "class": {
+                    "description": "The class related to the entry",
+                    "$ref": "#/definitions/models.Class"
+                },
+                "credit": {
+                    "description": "The credit earned for the class",
+                    "type": "string"
+                }
+            }
+        },
+        "models.TranscriptResponse": {
+            "type": "object",
+            "properties": {
+                "err": {
+                    "description": "If there was an error",
+                    "type": "boolean"
+                },
+                "msg": {
+                    "description": "The associated message",
+                    "type": "string"
+                },
+                "transcript": {
+                    "description": "The resulting transcript",
+                    "$ref": "#/definitions/models.Transcript"
+                }
+            }
         }
     },
     "tags": [
@@ -766,6 +930,14 @@
         {
             "description": "Get data about the report card",
             "name": "reportcard"
+        },
+        {
+            "description": "Get data about the schedule",
+            "name": "schedule"
+        },
+        {
+            "description": "Get data about the transcript",
+            "name": "transcript"
         }
     ]
 }
