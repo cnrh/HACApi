@@ -81,10 +81,10 @@ Refer to the [API's Swagger Documentation](https://threqt1.github.io/HACApi/)
 ### /classwork
 
 Parameters:
+(Not including username/password/base)
 
 ```json
 {
-  //...
   "markingPeriods": [1, 2, 3, 4, 5, 6]
 }
 ```
