@@ -1,11 +1,9 @@
-Add shields.io badges, description: An API to serve homeaccess content | local setup | api docs | how it works | performance | tips | credits
-
 <h1 align="center">HAC Information API</h1>
 
 <h5 align="center">A fast and simple way to interact with <a href="https://www.powerschool.com/">PowerSchool Home Access Center</a></h5>
 
 <div align="center">
-  <a href=""><img src="https://img.shields.io/badge/Go-1.19.3-00ADD8?style=flat-square&logo=go" /></a>
+  <a href="https://go.dev/"><img src="https://img.shields.io/badge/Go-1.19.3-00ADD8?style=flat-square&logo=go" /></a>
 </div>
 
 ## Description
@@ -14,7 +12,25 @@ The HAC Information API is an API written in Go meant to serve Home Access Cente
 
 ## Local Setup
 
+1. Download [Go](https://go.dev/)
+2. Clone the GitHub Repository
+3. Navigate into the folder, and run `go run main.go`
+
+For Documentation:
+
+1. Download [Swag](https://github.com/swaggo/swag) using `go install github.com/swaggo/swag/cmd/swag@latest`
+2. Inside the main project, run
+
+```bash
+swag fmt
+swag init
+```
+
+3. Once `swag init` finishes, the API automatically reserves the `/docs` endpoint for the docs. Navigate to it to view them.
+
 ## API Docs
+
+Refer to the [Swagger Documentation](https://threqt1.github.io/HACApi/)
 
 ## How It Works
 
