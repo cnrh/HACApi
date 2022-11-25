@@ -17,13 +17,14 @@ It covers the majority of the information HAC provides, including:
 - Transcript(s)
 - Schedule(s)
 
-With more information support in the works, including:
+With more features in the works, including:
 
 - Week View (Per Day)
 - Student Information
 - Teacher Email Support
 - Attendance
 - Comment Legend
+- `/multiple` endpoint for requesting multiple items at once
 
 ## Local Setup
 
@@ -61,7 +62,7 @@ Refer to the [API's Swagger Documentation](https://threqt1.github.io/HACApi/)
 
 ## Performance
 
-### Login
+### /login
 
 | API Response Time (ms) | Login |
 | ---------------------- | ----- |
@@ -76,6 +77,116 @@ Refer to the [API's Swagger Documentation](https://threqt1.github.io/HACApi/)
 |                        | 692   |
 |                        | 743   |
 | Average                | 744   |
+
+### /classwork
+
+Parameters:
+
+```json
+{
+  ...
+  "markingPeriods": [1, 2, 3, 4, 5, 6]
+}
+```
+
+| API Response Time (ms) | Without Login | With Login |
+| ---------------------- | ------------- | ---------- |
+|                        | 7530          | 7020       |
+|                        | 8510          | 7180       |
+|                        | 7050          | 7240       |
+|                        | 7530          | 6090       |
+|                        | 7930          | 6760       |
+|                        | 7810          | 7600       |
+|                        | 7650          | 7150       |
+|                        | 7560          | 7360       |
+|                        | 7640          | 6830       |
+|                        | 7690          | 6780       |
+| Average                | 7690          | 7001       |
+
+### /ipr
+
+| API Response Time (ms) | Without Login | With Login |
+| ---------------------- | ------------- | ---------- |
+|                        | 1270          | 582        |
+|                        | 1264          | 562        |
+|                        | 1230          | 559        |
+|                        | 1501          | 586        |
+|                        | 1464          | 572        |
+|                        | 1355          | 569        |
+|                        | 1349          | 761        |
+|                        | 1258          | 589        |
+|                        | 1327          | 560        |
+|                        | 1214          | 562        |
+| Average                | 1323          | 590        |
+
+### /ipr/all
+
+| API Response Time (ms) | Without Login | With Login |
+| ---------------------- | ------------- | ---------- |
+|                        | 1434          | 663        |
+|                        | 1416          | 659        |
+|                        | 1434          | 660        |
+|                        | 1584          | 683        |
+|                        | 1489          | 670        |
+|                        | 1587          | 727        |
+|                        | 1462          | 756        |
+|                        | 1412          | 662        |
+|                        | 1469          | 665        |
+|                        | 1485          | 711        |
+| Average                | 1477          | 686        |
+
+### /reportcard
+
+| API Response Time (ms) | Without Login | With Login |
+| ---------------------- | ------------- | ---------- |
+|                        | 1646          | 788        |
+|                        | 1691          | 794        |
+|                        | 1603          | 829        |
+|                        | 1515          | 828        |
+|                        | 1536          | 810        |
+|                        | 2350          | 788        |
+|                        | 1545          | 814        |
+|                        | 1515          | 795        |
+|                        | 1507          | 823        |
+|                        | 1669          | 865        |
+| Average                | 1658          | 813        |
+
+### /schedule
+
+| API Response Time (ms) | Without Login | With Login |
+| ---------------------- | ------------- | ---------- |
+|                        | 863           | 144        |
+|                        | 911           | 109        |
+|                        | 941           | 124        |
+|                        | 966           | 129        |
+|                        | 798           | 118        |
+|                        | 816           | 123        |
+|                        | 847           | 187        |
+|                        | 921           | 128        |
+|                        | 872           | 127        |
+|                        | 969           | 180        |
+| Average                | 890           | 137        |
+
+### /transcript
+
+| API Response Time (ms) | Without Login | With Login |
+| ---------------------- | ------------- | ---------- |
+|                        | 788           | 103        |
+|                        | 823           | 98         |
+|                        | 772           | 151        |
+|                        | 914           | 107        |
+|                        | 833           | 96         |
+|                        | 837           | 96         |
+|                        | 884           | 96         |
+|                        | 891           | 98         |
+|                        | 790           | 106        |
+|                        | 812           | 113        |
+| Average                | 834           | 106        |
+
+## Tips
+
+- Always POST to the `/login` endpoint before any subsequent requests, as it significantly boosts response times (see [Performance](#performance))
+- Read the [documentation](#api-docs) to see if any parameters are avaliable in the body which might suit the use case
 
 ## Credits
 
