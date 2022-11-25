@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
@@ -12,7 +13,7 @@ import (
 // request body to be passed in with a
 // POST request to the endpoint.
 type scheduleRequestBody struct {
-	baseRequestBody
+	utils.BaseRequestBody
 }
 
 // PostSchedule handles POST request to the schedule endpoint.

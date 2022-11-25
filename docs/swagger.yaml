@@ -83,11 +83,11 @@ definitions:
         example: homeaccess.katyisd.org
         type: string
       password:
-        description: The password to register
+        description: The password to log in with
         example: j382704
         type: string
       username:
-        description: The username to register
+        description: The username to log in with
         example: j1732901
         type: string
     required:

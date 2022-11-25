@@ -2,11 +2,14 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/Threqt1/HACApi/pkg/configs"
 	"github.com/Threqt1/HACApi/pkg/middleware"
 	"github.com/Threqt1/HACApi/pkg/routes"
+	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 
 	_ "github.com/Threqt1/HACApi/docs" // load API Docs files (Swagger)
 )
@@ -37,6 +40,12 @@ import (
 // @tag.description Get data about the transcript
 
 func main() {
+	//Register .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("DotEnv failed to load. Error: %v", err)
+	}
+
 	//Make new config
 	config := configs.FiberConfig()
 
@@ -52,5 +61,9 @@ func main() {
 	routes.NotFoundRoute(app)
 
 	//Start server
-	log.Fatal(app.Listen(":3000"))
+	if os.Getenv("DEV_STAGE") == "dev" {
+		utils.StartForDev(app)
+	} else {
+		utils.StartForProd(app)
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
@@ -15,7 +16,7 @@ import (
 // be passed with a POST request to the IPR
 // endpoint.
 type iprRequestBody struct {
-	baseRequestBody
+	utils.BaseRequestBody
 	//The date of the IPR to return
 	Date string `json:"date" validate:"optional" example:"09/06/2022"`
 }
@@ -106,7 +107,7 @@ func PostIPR(ctx *fiber.Ctx) error {
 }
 
 type iprAllRequestBody struct {
-	baseRequestBody
+	utils.BaseRequestBody
 	//Whether to return only dates or all the IPRs
 	DatesOnly bool `json:"datesOnly" validate:"optional" example:"true" default:"false"`
 }

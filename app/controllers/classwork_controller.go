@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,7 +12,7 @@ import (
 // classworkRequestBody represents the body that is to be passed with
 // the POST request to the classwork endpoint.
 type classworkRequestBody struct {
-	baseRequestBody
+	utils.BaseRequestBody
 	//The marking period to pull data from
 	MarkingPeriods []int `json:"markingPeriods" validate:"optional" example:"1,2"`
 }

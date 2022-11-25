@@ -1,14 +1,14 @@
 package utils
 
 // MakeClassworkFormData creates form data for a POST request to the HAC Classwork endpoint.
-func MakeClassworkFormData(mp, viewstate, viewstategen, eventvalidation string) map[string]string {
+func MakeClassworkFormData(mp string, formData PartialFormData) map[string]string {
 	return map[string]string{
 		"__EVENTTARGET":                              "ctl00$plnMain$btnRefreshView",
 		"__EVENTARGUMENT":                            "",
 		"__LASTFOCUS":                                "",
-		"__VIEWSTATE":                                viewstate,
-		"__VIEWSTATEGENERATOR":                       viewstategen,
-		"__EVENTVALIDATION":                          eventvalidation,
+		"__VIEWSTATE":                                formData.ViewState,
+		"__VIEWSTATEGENERATOR":                       formData.ViewStateGen,
+		"__EVENTVALIDATION":                          formData.EventValidation,
 		"ctl00$plnMain$hdnValidMHACLicense":          "N",
 		"ctl00$plnMain$hdnIsVisibleClsWrk":           "N",
 		"ctl00$plnMain$hdnIsVisibleCrsAvg":           "Y",
@@ -62,14 +62,14 @@ func MakeClassworkFormData(mp, viewstate, viewstategen, eventvalidation string) 
 	}
 }
 
-func MakeIPRFormData(date, viewstate, viewstategen, eventvalidation string) map[string]string {
+func MakeIPRFormData(date string, formData PartialFormData) map[string]string {
 	return map[string]string{
 		"__EVENTTARGET":                  "ctl00$plnMain$ddlIPRDates",
 		"__EVENTARGUMENT":                "",
 		"__LASTFOCUS":                    "",
-		"__VIEWSTATE":                    viewstate,
-		"__VIEWSTATEGENERATOR":           viewstategen,
-		"__EVENTVALIDATION":              eventvalidation,
+		"__VIEWSTATE":                    formData.ViewState,
+		"__VIEWSTATEGENERATOR":           formData.ViewStateGen,
+		"__EVENTVALIDATION":              formData.EventValidation,
 		"ctl00$plnMain$hdnTitle":         "Interim Progress Report For ",
 		"ctl00$plnMain$ddlIPRDates":      date,
 		"ctl00$plnMain$hdnMessage":       "Interim Progress information could not be found for this date.",

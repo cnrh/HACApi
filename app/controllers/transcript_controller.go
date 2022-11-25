@@ -4,12 +4,13 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
 
 type transcriptRequestBody struct {
-	baseRequestBody
+	utils.BaseRequestBody
 }
 
 // PostTranscript handles POST request to the transcript endpoint.

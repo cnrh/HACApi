@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 
+	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,12 +12,7 @@ import (
 // passed along with the POST request to the login
 // endpoint.
 type loginRequestBody struct {
-	//The username to register
-	Username string `json:"username" validate:"required" example:"j1732901"`
-	//The password to register
-	Password string `json:"password" validate:"required" example:"j382704"`
-	//The base URL for the PowerSchool HAC service
-	Base string `json:"base" validate:"required" example:"homeaccess.katyisd.org"`
+	utils.BaseRequestBody
 }
 
 // PostLogin handles POST requests to the login endpoint.

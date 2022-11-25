@@ -359,12 +359,12 @@ const docTemplate = `{
                     "example": "homeaccess.katyisd.org"
                 },
                 "password": {
-                    "description": "The password to register",
+                    "description": "The password to log in with",
                     "type": "string",
                     "example": "j382704"
                 },
                 "username": {
-                    "description": "The username to register",
+                    "description": "The username to log in with",
                     "type": "string",
                     "example": "j1732901"
                 }

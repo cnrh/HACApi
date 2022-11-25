@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
@@ -12,7 +13,7 @@ import (
 // request body that is to be passed in
 // with the POST request to this endpoint.
 type reportCardRequestBody struct {
-	baseRequestBody
+	utils.BaseRequestBody
 }
 
 // PostReportCard handles POST requests to the report card endpoint.
