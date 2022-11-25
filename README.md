@@ -61,6 +61,22 @@ Refer to the [API's Swagger Documentation](https://threqt1.github.io/HACApi/)
 
 ## Performance
 
+### Login
+
+| API Response Time (ms) | Login |
+| ---------------------- | ----- |
+|                        | 770   |
+|                        | 715   |
+|                        | 701   |
+|                        | 822   |
+|                        | 739   |
+|                        | 681   |
+|                        | 818   |
+|                        | 761   |
+|                        | 692   |
+|                        | 743   |
+| Average                | 744   |
+
 ## Credits
 
 - The packages mentioned in the [How It Works](#how-it-works) section
