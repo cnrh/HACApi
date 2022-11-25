@@ -8,6 +8,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/gofiber/swagger v0.1.8
 	github.com/jellydator/ttlcache/v3 v3.0.0
+	github.com/joho/godotenv v1.4.0
 	github.com/swaggo/swag v1.8.8
 )
 
