@@ -29,7 +29,8 @@ With more information support in the works, including:
 
 1. Download [Go](https://go.dev/)
 2. Clone the GitHub Repository
-3. Navigate into the folder, and run `go run main.go`
+3. Rename the file `.env-example` to `.env` and fill in the required fields
+4. Navigate into the folder, and run `go run main.go`
 
 For Documentation:
 
