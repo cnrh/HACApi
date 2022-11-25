@@ -9,6 +9,21 @@
 ## Description
 
 The HAC Information API is an API written in Go meant to serve Home Access Center content quickly and in a format that's easy to work with.
+It covers the majority of the information HAC provides, including:
+
+- Classwork (Per Marking Period)
+- Interim Progress Reports (Per Date)
+- Report Card(s)
+- Transcript(s)
+- Schedule(s)
+
+With more information support in the works, including:
+
+- Week View (Per Day)
+- Student Information
+- Teacher Email Support
+- Attendance
+- Comment Legend
 
 ## Local Setup
 
@@ -30,7 +45,7 @@ swag init
 
 ## API Docs
 
-Refer to the [Swagger Documentation](https://threqt1.github.io/HACApi/)
+Refer to the [API's Swagger Documentation](https://threqt1.github.io/HACApi/)
 
 ## How It Works
 
