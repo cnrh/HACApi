@@ -11,20 +11,20 @@ import (
 // ParseSchedule takes in raw HTML and parses it into a schedule
 // model.
 func ParseSchedule(html *goquery.Selection) models.Schedule {
-	//Make a struct to store parsed schedule
+	// Make a struct to store parsed schedule
 	schedule := models.Schedule{}
 
-	//Get all schedule entry HTML elements
+	// Get all schedule entry HTML elements
 	scheduleEntryEles := html.Find("tr.sg-asp-table-data-row")
 
-	//Allocate memory for array
+	// Allocate memory for array
 
 	schedule.Entries = make([]models.ScheduleEntry, 0, scheduleEntryEles.Length())
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
-	//Go through each class in the schedule
+	// Go through each class in the schedule
 	scheduleEntryEles.Each(func(_ int, scheduleEntryEle *goquery.Selection) {
 		wg.Add(1)
 
@@ -33,7 +33,7 @@ func ParseSchedule(html *goquery.Selection) models.Schedule {
 			scheduleEntry := parseScheduleEntry(scheduleEntryEle)
 			mutex.Lock()
 			defer mutex.Unlock()
-			//Push the entry to the slice
+			// Push the entry to the slice
 			schedule.Entries = append(schedule.Entries, scheduleEntry)
 		}()
 	})
@@ -47,18 +47,18 @@ func ParseSchedule(html *goquery.Selection) models.Schedule {
 // into a ScheduleEntry struct. It returns that plus a slice containing the marking
 // periods this entry is active for.
 func parseScheduleEntry(scheduleEntryEle *goquery.Selection) models.ScheduleEntry {
-	//Make entry struct
+	// Make entry struct
 	scheduleEntry := models.ScheduleEntry{}
 
-	//Go through each td, using i to find what the text corresponds to
+	// Go through each td, using i to find what the text corresponds to
 	scheduleEntryEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
-		//Parse text, return if there is none
+		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) <= 0 {
+		if len(text) == 0 {
 			return
 		}
 
-		//Fill in data using i
+		// Fill in data using i
 		switch i {
 		case 0:
 			scheduleEntry.Class.Course = text

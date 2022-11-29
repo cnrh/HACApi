@@ -22,7 +22,7 @@ type transcriptRequestBody struct {
 // @Success     200 {object} models.TranscriptResponse
 // @Router      /transcript [post]
 func PostTranscript(ctx *fiber.Ctx) error {
-	//Parse body
+	// Parse body
 	params := new(transcriptRequestBody)
 
 	if err := ctx.BodyParser(params); err != nil {
@@ -33,10 +33,10 @@ func PostTranscript(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Verify validity of body params
+	// Verify validity of body params
 	bodyParamsValid := true
 
-	//Confirm no required body parameters are empty
+	// Confirm no required body parameters are empty
 	if params.Username == "" || params.Password == "" || params.Base == "" {
 		bodyParamsValid = false
 	}
@@ -49,13 +49,13 @@ func PostTranscript(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Form cache key
+	// Form cache key
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	//Try logging in, or grab cached collector
+	// Try logging in, or grab cached collector
 	collector := cache.CurrentCache().Get(cacheKey)
 
-	//Error out if login fails
+	// Error out if login fails
 	if collector == nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":        true,
@@ -64,10 +64,10 @@ func PostTranscript(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Get transcript
+	// Get transcript
 	transcript, err := queries.GetTranscript(collector.Value(), params.Base)
 
-	//Check if returned value was nil
+	// Check if returned value was nil
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"err":        true,
@@ -76,7 +76,7 @@ func PostTranscript(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//All is well
+	// All is well
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"err":        false,
 		"msg":        "",

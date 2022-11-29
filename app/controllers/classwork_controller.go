@@ -13,7 +13,7 @@ import (
 // the POST request to the classwork endpoint.
 type classworkRequestBody struct {
 	utils.BaseRequestBody
-	//The marking period to pull data from
+	// The marking period to pull data from
 	MarkingPeriods []int `json:"markingPeriods" validate:"optional" example:"1,2"`
 }
 
@@ -27,10 +27,10 @@ type classworkRequestBody struct {
 // @Success     200 {object} models.ClassworkResponse
 // @Router      /classwork [post]
 func PostClasswork(ctx *fiber.Ctx) error {
-	//Parse body
+	// Parse body
 	params := new(classworkRequestBody)
 
-	//If parsing body params failed, return error
+	// If parsing body params failed, return error
 	if err := ctx.BodyParser(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":       true,
@@ -39,20 +39,20 @@ func PostClasswork(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Verify validity of body params
+	// Verify validity of body params
 	bodyParamsValid := true
 
-	//Confirm no required body parameters are empty
+	// Confirm no required body parameters are empty
 	if params.Username == "" || params.Password == "" || params.Base == "" {
 		bodyParamsValid = false
 	}
 
-	//Confirm length of marking periods array is 0 <= len <= 6
+	// Confirm length of marking periods array is 0 <= len <= 6
 	if mpLen := len(params.MarkingPeriods); mpLen > 6 {
 		bodyParamsValid = false
 	}
 
-	//Confirm marking periods array has values of 1 <= val <= 6
+	// Confirm marking periods array has values of 1 <= val <= 6
 	for _, mp := range params.MarkingPeriods {
 		if mp < 1 || mp > 6 {
 			bodyParamsValid = false
@@ -60,7 +60,7 @@ func PostClasswork(ctx *fiber.Ctx) error {
 		}
 	}
 
-	//If body params not valid, return error
+	// If body params not valid, return error
 	if !bodyParamsValid {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":       true,
@@ -69,13 +69,13 @@ func PostClasswork(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Form cache key
+	// Form cache key
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	//Try logging in, or grab cached collector
+	// Try logging in, or grab cached collector
 	collector := cache.CurrentCache().Get(cacheKey)
 
-	//Error out if login fails
+	// Error out if login fails
 	if collector == nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":       true,
@@ -84,10 +84,10 @@ func PostClasswork(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Get classwork
+	// Get classwork
 	classwork, err := queries.GetClasswork(collector.Value(), params.Base, params.MarkingPeriods)
 
-	//Check if returned value was nil
+	// Check if returned value was nil
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"err":       true,
@@ -96,7 +96,7 @@ func PostClasswork(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//All is well
+	// All is well
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"err":       false,
 		"msg":       "",

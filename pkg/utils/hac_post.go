@@ -9,7 +9,7 @@ import (
 
 // PostTo posts to a given endpoint with the given formdata, handling failures and returning HTML.
 func PostTo(baseCollector *colly.Collector, base, url string, formData map[string]string) (*colly.Collector, *goquery.Selection, error) {
-	//Form URL
+	// Form URL
 	formedUrl := "https://" + base + url
 
 	// Make a copy of the collector

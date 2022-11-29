@@ -9,25 +9,25 @@ import (
 
 // Login logs a colly collector into home access center.
 func Login(base, username, password string) (*colly.Collector, error) {
-	//Create a new async collector
+	// Create a new async collector
 	collector := colly.NewCollector(
 		colly.AllowedDomains(base),
 		colly.Async(true),
 		colly.AllowURLRevisit(),
 	)
 
-	//Create a channel to get the request verification token from HTML
+	// Create a channel to get the request verification token from HTML
 	reqVerChan := make(chan string, 1)
 
-	//Retrieve request verification token from HTML
+	// Retrieve request verification token from HTML
 	collector.OnHTML("input[name='__RequestVerificationToken']", func(elem *colly.HTMLElement) {
 		reqVerChan <- elem.Attr("value")
 	})
 
-	//Form login URL
+	// Form login URL
 	loginURL := "https://" + base + repository.LOGIN_ROUTE
 
-	//Get request verification token, abort if failed
+	// Get request verification token, abort if failed
 	err := collector.Visit(loginURL)
 	collector.Wait()
 
@@ -35,13 +35,13 @@ func Login(base, username, password string) (*colly.Collector, error) {
 		return nil, err
 	}
 
-	//Create clone collector, let's login for real
+	// Create clone collector, let's login for real
 	collector = collector.Clone()
 
-	//Get Request Verification token
+	// Get Request Verification token
 	reqVerToken := <-reqVerChan
 
-	//Create payload data
+	// Create payload data
 	payload := map[string]string{
 		"__RequestVerificationToken": reqVerToken,
 		"LogOnDetails.UserName":      username,
@@ -54,13 +54,13 @@ func Login(base, username, password string) (*colly.Collector, error) {
 		"tempPW":                     "",
 	}
 
-	//Channel to recieve whether login failed or not
+	// Channel to recieve whether login failed or not
 	loginWrongChan := make(chan bool, 1)
 
-	//Form URL we expect to be at after response
+	// Form URL we expect to be at after response
 	expectedURL := "https://" + base + "/HomeAccess/Classes/Classwork"
 
-	//Check if we are at expected URL. If not, login failed
+	// Check if we are at expected URL. If not, login failed
 	collector.OnResponse(func(res *colly.Response) {
 		if res.Request.URL.String() != expectedURL {
 			loginWrongChan <- true
@@ -69,7 +69,7 @@ func Login(base, username, password string) (*colly.Collector, error) {
 		}
 	})
 
-	//Set request headers
+	// Set request headers
 	collector.OnRequest(func(req *colly.Request) {
 		req.Headers.Set("Host", base)
 		req.Headers.Set("Origin", "https://"+base)
@@ -77,11 +77,11 @@ func Login(base, username, password string) (*colly.Collector, error) {
 		req.Headers.Set("__RequestVerificationToken", reqVerToken)
 	})
 
-	//Post to login
+	// Post to login
 	err = collector.Post(loginURL, payload)
 	collector.Wait()
 
-	//Check if login went through
+	// Check if login went through
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +90,6 @@ func Login(base, username, password string) (*colly.Collector, error) {
 		return nil, errors.New("invalid credentials")
 	}
 
-	//Return logged in collector
+	// Return logged in collector
 	return collector, nil
 }

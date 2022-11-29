@@ -42,17 +42,17 @@ type Absences struct {
 // ReportCardEntry represents a singular
 // entry in the report card for one class.
 type ReportCardEntry struct {
-	Class           Class
-	AttemptedCredit string
-	EarnedCredit    string
-	Averages        SixWeeksGrades
-	Comments        SixWeeksOther
-	Conduct         SixWeeksOther
-	Absences        Absences
+	Class           Class          // Information about the class for the entry
+	AttemptedCredit string         // The amount of credit attempted
+	EarnedCredit    string         // The amount of credit earned
+	Averages        SixWeeksGrades // Data about grades
+	Comments        SixWeeksOther  // Data about comments
+	Conduct         SixWeeksOther  // Data about conduct
+	Absences        Absences       // Data about absences
 }
 
 // ReportCard holds the array Entries with
 // the report card data for each class.
 type ReportCard struct {
-	Entries []ReportCardEntry
+	Entries []ReportCardEntry // All the report card entries
 }

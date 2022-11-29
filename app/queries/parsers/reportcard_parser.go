@@ -11,19 +11,19 @@ import (
 // ParseReportCard takes in raw HTML and parses it into a report
 // card model.
 func ParseReportCard(html *goquery.Selection) models.ReportCard {
-	//Make struct to store parsed report card
+	// Make struct to store parsed report card
 	reportCard := models.ReportCard{}
 
-	//Get all entries
+	// Get all entries
 	reportCardEntryEles := html.Find("tr.sg-asp-table-data-row")
 
-	//Allocate space for array
+	// Allocate space for array
 	reportCard.Entries = make([]models.ReportCardEntry, 0, reportCardEntryEles.Length())
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
-	//Go through each entry to parse it
+	// Go through each entry to parse it
 	reportCardEntryEles.Each(func(_ int, reportCardEntryEle *goquery.Selection) {
 		wg.Add(1)
 
@@ -44,18 +44,18 @@ func ParseReportCard(html *goquery.Selection) models.ReportCard {
 // parseReportCardEntry takes in a report card entry HTML element and parses it
 // into a ReportCardEntry struct.
 func parseReportCardEntry(reportCardEntryEle *goquery.Selection) models.ReportCardEntry {
-	//Make a struct to store parsed data
+	// Make a struct to store parsed data
 	reportCardEntry := models.ReportCardEntry{}
 
-	//Go through each td, using i to match text to the corresponding field
+	// Go through each td, using i to match text to the corresponding field
 	reportCardEntryEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
-		//Parse text, return if there is none
+		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) <= 0 {
+		if len(text) == 0 {
 			return
 		}
 
-		//Fill in data using i
+		// Fill in data using i
 		switch i {
 		case 0:
 			reportCardEntry.Class.Course = text

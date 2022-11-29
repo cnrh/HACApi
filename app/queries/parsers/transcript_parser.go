@@ -11,19 +11,19 @@ import (
 // ParseTranscript takes in raw HTML and parses it into
 // a transcript struct.
 func ParseTranscript(html *goquery.Selection) models.Transcript {
-	//Create struct to hold parsed transcript
+	// Create struct to hold parsed transcript
 	transcript := models.Transcript{}
 
-	//Find all group HTML elements
+	// Find all group HTML elements
 	transcriptGroupEles := html.Find("td.sg-transcript-group")
 
-	//Allocate memory for the slice
+	// Allocate memory for the slice
 	transcript.Groups = make([]models.TranscriptGroup, 0, transcriptGroupEles.Length())
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
-	//Parse each semester entry
+	// Parse each semester entry
 	transcriptGroupEles.Each(func(transcriptGroupPos int, transcriptGroupEle *goquery.Selection) {
 		wg.Add(1)
 
@@ -32,12 +32,12 @@ func ParseTranscript(html *goquery.Selection) models.Transcript {
 			transcriptGroup := parseTranscriptGroup(transcriptGroupEle)
 			mutex.Lock()
 			defer mutex.Unlock()
-			//Append group to slice
+			// Append group to slice
 			transcript.Groups = append(transcript.Groups, transcriptGroup)
 		}()
 	})
 
-	//Parse GPA concurrently
+	// Parse GPA concurrently
 	html.Find(".sg-content-grid > table > tbody > tr:nth-last-child(2) > td > table > tbody > tr.sg-asp-table-data-row").Each(func(gpaType int, transcriptGPAEle *goquery.Selection) {
 		wg.Add(1)
 
@@ -46,7 +46,7 @@ func ParseTranscript(html *goquery.Selection) models.Transcript {
 			transcriptGPA := parseTranscriptGPA(transcriptGPAEle)
 			mutex.Lock()
 			defer mutex.Unlock()
-			//Assign GPA based on its index (type)
+			// Assign GPA based on its index (type)
 			switch gpaType {
 			case 0:
 				transcript.Weighted = transcriptGPA
@@ -64,20 +64,20 @@ func ParseTranscript(html *goquery.Selection) models.Transcript {
 // parseTranscriptGroup takes in a HTML element representing a transcript group,
 // and parses it into a TranscriptGroup struct.
 func parseTranscriptGroup(transcriptGroupEle *goquery.Selection) models.TranscriptGroup {
-	//Make struct to put parsed data into
+	// Make struct to put parsed data into
 	transcriptGroup := models.TranscriptGroup{}
 
-	//Get all entries in the group element
+	// Get all entries in the group element
 	transcriptGroupEntryEles := transcriptGroupEle.Find("table.sg-asp-table tr.sg-asp-table-data-row")
 
-	//Allocate memory
+	// Allocate memory
 	transcriptGroup.Entries = make([]models.TranscriptGroupEntry, 0, transcriptGroupEntryEles.Length())
 
-	//Parse the top table for information about the group
+	// Parse the top table for information about the group
 	transcriptGroupEle.Find("table:first-child td:nth-child(even)").Each(func(i int, dataEle *goquery.Selection) {
-		//Parse text, return if there is none
+		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) <= 0 {
+		if len(text) == 0 {
 			return
 		}
 
@@ -93,14 +93,14 @@ func parseTranscriptGroup(transcriptGroupEle *goquery.Selection) models.Transcri
 		}
 	})
 
-	//Get total credit
+	// Get total credit
 	totalCreditText := transcriptGroupEle.Find("table[style='float:right'] td:last-child").Text()
 	transcriptGroup.TotalCredit = strings.TrimSpace(totalCreditText)
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
 
-	//Parse each entry in the table
+	// Parse each entry in the table
 	transcriptGroupEntryEles.Each(func(_ int, transcriptGroupEntryEle *goquery.Selection) {
 		wg.Add(1)
 
@@ -115,7 +115,7 @@ func parseTranscriptGroup(transcriptGroupEle *goquery.Selection) models.Transcri
 
 	wg.Wait()
 
-	//transcriptGroup.TotalCredit = &totalCredit
+	// transcriptGroup.TotalCredit = &totalCredit
 
 	return transcriptGroup
 }
@@ -123,14 +123,14 @@ func parseTranscriptGroup(transcriptGroupEle *goquery.Selection) models.Transcri
 // parseTranscriptGroupEntry takes in a HTML element representing a transcript group entry, and
 // parses it to return a TranscriptGroupEntry struct.
 func parseTranscriptGroupEntry(transcriptGroupEntryEle *goquery.Selection) models.TranscriptGroupEntry {
-	//Make struct to put parsed data into
+	// Make struct to put parsed data into
 	transcriptGroupEntry := models.TranscriptGroupEntry{}
 
-	//Parse each td, using i to match the text to what it describes
+	// Parse each td, using i to match the text to what it describes
 	transcriptGroupEntryEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
-		//Parse text, return if there is none
+		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) <= 0 {
+		if len(text) == 0 {
 			return
 		}
 
@@ -152,14 +152,14 @@ func parseTranscriptGroupEntry(transcriptGroupEntryEle *goquery.Selection) model
 // parseTranscriptGPA takes in a HTML object representing a GPA record, and
 // parses it to return a TranscriptGPA struct.
 func parseTranscriptGPA(transcriptGPAEle *goquery.Selection) models.TranscriptGPA {
-	//Struct for parsed data
+	// Struct for parsed data
 	transcriptGPA := models.TranscriptGPA{}
 
-	//Loop through all TDs, fill in necessary data
+	// Loop through all TDs, fill in necessary data
 	transcriptGPAEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
-		//Parse text, return if there is none
+		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) <= 0 {
+		if len(text) == 0 {
 			return
 		}
 

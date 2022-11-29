@@ -14,27 +14,27 @@ import (
 // GetIPR accepts a collector, base, and a date, and outputs the corresponding parsed IPR for
 // the date.
 func GetIPR(loginCollector *colly.Collector, base string, date time.Time) ([]models.IPR, error) {
-	//Get initial page
+	// Get initial page
 	collector, html, err := utils.NavigateTo(loginCollector, base, repository.IPR_ROUTE)
 
-	//Check for initial success
+	// Check for initial success
 	if err != nil {
 		return nil, err
 	}
 
-	//Determine current IPR date
+	// Determine current IPR date
 	currDateOptionAttr := html.Find("#plnMain_ddlIPRDates > option[selected='selected']").Text()
 	currDate, err := time.Parse("01/02/2006", currDateOptionAttr)
 	if err != nil {
 		return nil, err
 	}
 
-	//Get other necessary fields
+	// Get other necessary fields
 	viewstate, _ := html.Find("input[name='__VIEWSTATE']").Attr("value")
 	viewstategen, _ := html.Find("input[name='__VIEWSTATEGENERATOR']").Attr("value")
 	eventvalidation, _ := html.Find("input[name='__EVENTVALIDATION']").Attr("value")
 
-	//Make structs for pipeline generation
+	// Make structs for pipeline generation
 	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.IPR_ROUTE, Base: base}
 	recievedInfo := recievedIPRInfo{HTML: html, Date: currDate}
 	functions := utils.PipelineFunctions[models.IPR, time.Time]{
@@ -45,15 +45,15 @@ func GetIPR(loginCollector *colly.Collector, base string, date time.Time) ([]mod
 		},
 	}
 
-	//Make array of dates
+	// Make array of dates
 	dates := make([]time.Time, 0, 1)
 
-	//If date isnt a zero value, append it into array
+	// If date isnt a zero value, append it into array
 	if !date.IsZero() {
 		dates = append(dates, date)
 	}
 
-	//Generate IPR
+	// Generate IPR
 	recievedIPRs, err := utils.GeneratePipeline[models.IPR, time.Time](collector, dates, recievedInfo, formData, functions)
 
 	if err != nil {
@@ -64,39 +64,39 @@ func GetIPR(loginCollector *colly.Collector, base string, date time.Time) ([]mod
 }
 
 func GetAllIPRs(loginCollector *colly.Collector, base string, datesOnly bool) ([]models.IPR, error) {
-	//Get initial page
+	// Get initial page
 	collector, html, err := utils.NavigateTo(loginCollector, base, repository.IPR_ROUTE)
 
-	//Check for initial success
+	// Check for initial success
 	if err != nil {
 		return nil, err
 	}
 
-	//Determine current IPR date
+	// Determine current IPR date
 	currDateOptionAttr := html.Find("#plnMain_ddlIPRDates > option[selected='selected']").Text()
 	currDate, err := time.Parse("01/02/2006", currDateOptionAttr)
 	if err != nil {
 		return nil, err
 	}
 
-	//Get every single avaliable date
+	// Get every single avaliable date
 	dateOptionEles := html.Find("#plnMain_ddlIPRDates > option")
 	dates := make([]time.Time, 0, dateOptionEles.Length())
 
 	dateOptionEles.Each(func(_ int, dateOptionEle *goquery.Selection) {
-		//Get text
+		// Get text
 		dateText := dateOptionEle.Text()
 
-		//Parse date
+		// Parse date
 		date, err := time.Parse("01/02/2006", dateText)
 
-		//If no err, push to dates
+		// If no err, push to dates
 		if err == nil {
 			dates = append(dates, date)
 		}
 	})
 
-	//If only dates were needed, convert dates into correct model and return
+	// If only dates were needed, convert dates into correct model and return
 	if datesOnly {
 		partialIPRs := make([]models.IPR, 0, len(dates))
 		for _, date := range dates {
@@ -105,12 +105,12 @@ func GetAllIPRs(loginCollector *colly.Collector, base string, datesOnly bool) ([
 		return partialIPRs, nil
 	}
 
-	//Get other necessary fields
+	// Get other necessary fields
 	viewstate, _ := html.Find("input[name='__VIEWSTATE']").Attr("value")
 	viewstategen, _ := html.Find("input[name='__VIEWSTATEGENERATOR']").Attr("value")
 	eventvalidation, _ := html.Find("input[name='__EVENTVALIDATION']").Attr("value")
 
-	//Make structs for pipeline generation
+	// Make structs for pipeline generation
 	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.IPR_ROUTE, Base: base}
 	recievedInfo := recievedIPRInfo{HTML: html, Date: currDate}
 	functions := utils.PipelineFunctions[models.IPR, time.Time]{
@@ -121,7 +121,7 @@ func GetAllIPRs(loginCollector *colly.Collector, base string, datesOnly bool) ([
 		},
 	}
 
-	//Generate IPRs
+	// Generate IPRs
 	recievedIPRs, err := utils.GeneratePipeline[models.IPR, time.Time](collector, dates, recievedInfo, formData, functions)
 
 	if err != nil {
@@ -134,8 +134,8 @@ func GetAllIPRs(loginCollector *colly.Collector, base string, datesOnly bool) ([
 // recievedIPRInfo struct representing IPR information
 // for a date that was recieved by the first call.
 type recievedIPRInfo struct {
-	HTML *goquery.Selection //The recieved HTML
-	Date time.Time          //The time related to the IPR recieved
+	HTML *goquery.Selection // The recieved HTML
+	Date time.Time          // The time related to the IPR recieved
 }
 
 func (rii recievedIPRInfo) Html() *goquery.Selection {

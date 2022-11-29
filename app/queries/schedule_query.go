@@ -10,18 +10,18 @@ import (
 
 // GetSchedule accepts a collector and a base, and returns a parsed schedule.
 func GetSchedule(loginCollector *colly.Collector, base string) (models.Schedule, error) {
-	//Create empty schedule
+	// Create empty schedule
 	var schedule models.Schedule
 
-	//Get initial page
+	// Get initial page
 	_, html, err := utils.NavigateTo(loginCollector, base, repository.SCHEDULE_ROUTE)
 
-	//Check for initial success
+	// Check for initial success
 	if err != nil {
 		return schedule, err
 	}
 
-	//Parse schedule HTML
+	// Parse schedule HTML
 	schedule = parsers.ParseSchedule(html)
 
 	return schedule, nil

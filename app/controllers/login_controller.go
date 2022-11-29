@@ -25,10 +25,10 @@ type loginRequestBody struct {
 // @Success     200 {object} models.LoginResponse
 // @Router      /login [post]
 func PostLogin(ctx *fiber.Ctx) error {
-	//Parse body
+	// Parse body
 	params := new(loginRequestBody)
 
-	//If parsing body params failed, return error
+	// If parsing body params failed, return error
 	if err := ctx.BodyParser(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
@@ -36,15 +36,15 @@ func PostLogin(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Verify validity of body params
+	// Verify validity of body params
 	bodyParamsValid := true
 
-	//Confirm no required body parameters are empty
+	// Confirm no required body parameters are empty
 	if params.Username == "" || params.Password == "" || params.Base == "" {
 		bodyParamsValid = false
 	}
 
-	//If body params not valid, return error
+	// If body params not valid, return error
 	if !bodyParamsValid {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
@@ -52,13 +52,13 @@ func PostLogin(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Form cache key
+	// Form cache key
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	//Cache the user, if not cached already
+	// Cache the user, if not cached already
 	cache.CurrentCache().Get(cacheKey)
 
-	//Success
+	// Success
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"err": false,
 		"msg": "",

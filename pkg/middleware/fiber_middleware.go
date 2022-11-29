@@ -10,10 +10,10 @@ import (
 // the API.
 func FiberMiddleware(app *fiber.App) {
 	app.Use(
-		//Enable CORS
+		// Enable CORS
 		cors.New(),
 
-		//Add a logger
+		// Add a logger
 		logger.New(),
 	)
 }

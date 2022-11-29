@@ -18,11 +18,11 @@ type PipelineResponse[T any] struct {
 // PartialFormData represents partial formdata
 // for a POST request.
 type PartialFormData struct {
-	ViewState       string //viewstate formdata entry
-	ViewStateGen    string //viewstategen formdata entry
-	EventValidation string //eventvalidation formdata entry
-	Url             string //url for the request
-	Base            string //base url for the request
+	ViewState       string // viewstate formdata entry
+	ViewStateGen    string // viewstategen formdata entry
+	EventValidation string // eventvalidation formdata entry
+	Url             string // url for the request
+	Base            string // base url for the request
 }
 
 // PipelineFunctions describes the functions needed in order
@@ -44,18 +44,18 @@ type IPipelineRecievedValue[V any] interface {
 // GeneratePipeline creates a new pipeline which will gather data from a POST request, parse it, and return it in an array format. T represents the model struct,
 // V represents the recieved value's type.
 func GeneratePipeline[T any, V any](collector *colly.Collector, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) ([]T, error) {
-	//Make a done channel for cancelling on error
+	// Make a done channel for cancelling on error
 	doneChan := make(chan struct{})
 	defer close(doneChan)
 
-	//Recieve parsed data
+	// Recieve parsed data
 	parsedDataChan := pipelineParseHTML(collector, doneChan, data, recievedInfo, formData, functions)
 
-	//Append recieved data to array
+	// Append recieved data to array
 	dataArray := make([]T, 0, len(data))
 
 	for res := range parsedDataChan {
-		//If there's an error, cancel
+		// If there's an error, cancel
 		if res.Err != nil {
 			return nil, res.Err
 		}
@@ -68,39 +68,39 @@ func GeneratePipeline[T any, V any](collector *colly.Collector, data []V, reciev
 
 // pipelineParseHTML represents the step in the pipeline where raw HTML is recieved through a channel, parsed, and emitted out through another channel.
 func pipelineParseHTML[T any, V any](collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[T] {
-	//Make a channel to emit parsed data/errors
+	// Make a channel to emit parsed data/errors
 	parsedDataChan := make(chan PipelineResponse[T])
 
 	go func() {
-		//Recieve raw HTML
+		// Recieve raw HTML
 		rawHTMLChan := pipelineGetHTML(collector, doneChan, data, recievedInfo, formData, functions)
 
 		var wg sync.WaitGroup
 
-		//Parse HTML concurrently
+		// Parse HTML concurrently
 		for res := range rawHTMLChan {
-			//If error, cascade it down and break
+			// If error, cascade it down and break
 			if res.Err != nil {
 				parsedDataChan <- PipelineResponse[T]{Err: res.Err}
 				break
 			}
 
-			//Otherwise, start goroutine to parse
+			// Otherwise, start goroutine to parse
 			wg.Add(1)
 			go func(res PipelineResponse[*goquery.Selection]) {
 				defer wg.Done()
 
-				//Check if done was called
+				// Check if done was called
 				select {
 				case <-doneChan:
 					return
 				default:
 				}
 
-				//Parse HTML
+				// Parse HTML
 				parsedData := functions.Parse(res.Value)
 
-				//Try emitting parsed data
+				// Try emitting parsed data
 				select {
 				case parsedDataChan <- PipelineResponse[T]{Value: parsedData, Err: nil}:
 				case <-doneChan:
@@ -108,7 +108,7 @@ func pipelineParseHTML[T any, V any](collector *colly.Collector, doneChan <-chan
 			}(res)
 		}
 
-		//Close channel once finished
+		// Close channel once finished
 		go func() {
 			wg.Wait()
 			close(parsedDataChan)
@@ -120,14 +120,14 @@ func pipelineParseHTML[T any, V any](collector *colly.Collector, doneChan <-chan
 
 // pipelineGetHTML represents the step in the pipeline where raw HTML is gathered using POST requests, and emitted out using a channel.
 func pipelineGetHTML[T any, V any](collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[*goquery.Selection] {
-	//Make channel for outputting raw HTML
+	// Make channel for outputting raw HTML
 	rawHTMLChan := make(chan PipelineResponse[*goquery.Selection])
 
-	//Get HTML concurrently
+	// Get HTML concurrently
 	go func() {
 		var wg sync.WaitGroup
 
-		//If no data, return recieved info
+		// If no data, return recieved info
 		if len(data) == 0 {
 			select {
 			case rawHTMLChan <- PipelineResponse[*goquery.Selection]{Value: recievedInfo.Html(), Err: nil}:
@@ -135,21 +135,21 @@ func pipelineGetHTML[T any, V any](collector *colly.Collector, doneChan <-chan s
 			}
 		}
 
-		//Scrape in parallel
+		// Scrape in parallel
 		for _, piece := range data {
 			wg.Add(1)
 
 			go func(piece V) {
 				defer wg.Done()
 
-				//Check if done's been called
+				// Check if done's been called
 				select {
 				case <-doneChan:
 					return
 				default:
 				}
 
-				//Get HTML
+				// Get HTML
 				var html *goquery.Selection
 				var err error
 
@@ -159,7 +159,7 @@ func pipelineGetHTML[T any, V any](collector *colly.Collector, doneChan <-chan s
 					_, html, err = PostTo(collector, formData.Base, formData.Url, functions.GenFormData(functions.ToFormData(piece), formData))
 				}
 
-				//Try emitting HTML to channel
+				// Try emitting HTML to channel
 				select {
 				case rawHTMLChan <- PipelineResponse[*goquery.Selection]{Value: html, Err: err}:
 				case <-doneChan:
@@ -167,7 +167,7 @@ func pipelineGetHTML[T any, V any](collector *colly.Collector, doneChan <-chan s
 			}(piece)
 		}
 
-		//Close channel once done
+		// Close channel once done
 		go func() {
 			wg.Wait()
 			close(rawHTMLChan)

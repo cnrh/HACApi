@@ -9,18 +9,18 @@ import (
 )
 
 func GetTranscript(loginCollector *colly.Collector, base string) (models.Transcript, error) {
-	//Create empty transcript
+	// Create empty transcript
 	var transcript models.Transcript
 
-	//Get initial page
+	// Get initial page
 	_, html, err := utils.NavigateTo(loginCollector, base, repository.TRANSCRIPT_ROUTE)
 
-	//Check for initial success
+	// Check for initial success
 	if err != nil {
 		return transcript, err
 	}
 
-	//Parse transcript HTML
+	// Parse transcript HTML
 	transcript = parsers.ParseTranscript(html)
 
 	return transcript, nil

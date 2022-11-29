@@ -16,15 +16,15 @@ import (
 // GetClasswork accepts a collector, base, and a list of marking periods, and returns an array of parsed classwork
 // objects for the inputted marking periods.
 func GetClasswork(loginCollector *colly.Collector, base string, markingPeriods []int) ([]models.Classwork, error) {
-	//Get initial page
+	// Get initial page
 	collector, html, err := utils.NavigateTo(loginCollector, base, repository.CLASSWORK_ROUTE)
 
-	//Check for initial success
+	// Check for initial success
 	if err != nil {
 		return nil, err
 	}
 
-	//Determine the current marking period suffix
+	// Determine the current marking period suffix
 	markingPerOptionAttr, exists := html.Find("#plnMain_ddlReportCardRuns > option[selected='selected']").Attr("value")
 	if !exists {
 		return nil, errors.New("invalid page")
@@ -36,12 +36,12 @@ func GetClasswork(loginCollector *colly.Collector, base string, markingPeriods [
 		return nil, err
 	}
 
-	//Get other necessary fields
+	// Get other necessary fields
 	viewstate, _ := html.Find("input[name='__VIEWSTATE']").Attr("value")
 	viewstategen, _ := html.Find("input[name='__VIEWSTATEGENERATOR']").Attr("value")
 	eventvalidation, _ := html.Find("input[name='__EVENTVALIDATION']").Attr("value")
 
-	//Make structs for pipeline generation
+	// Make structs for pipeline generation
 	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.CLASSWORK_ROUTE, Base: base}
 	recievedInfo := recievedClassworkInfo{HTML: html, Mp: currMarkingPer}
 	functions := utils.PipelineFunctions[models.Classwork, int]{
@@ -52,7 +52,7 @@ func GetClasswork(loginCollector *colly.Collector, base string, markingPeriods [
 		},
 	}
 
-	//Generate classwork
+	// Generate classwork
 	recievedClasswork, err := utils.GeneratePipeline[models.Classwork, int](collector, markingPeriods, recievedInfo, formData, functions)
 
 	if err != nil {
@@ -65,8 +65,8 @@ func GetClasswork(loginCollector *colly.Collector, base string, markingPeriods [
 // recievedClassworkInfo struct representing classwork information
 // for a given marking period that was recieved by the first call.
 type recievedClassworkInfo struct {
-	HTML *goquery.Selection //The recieved HTML
-	Mp   int                //The marking period
+	HTML *goquery.Selection // The recieved HTML
+	Mp   int                // The marking period
 }
 
 func (rci recievedClassworkInfo) Html() *goquery.Selection {

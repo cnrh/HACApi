@@ -1,7 +1,5 @@
 package controllers
 
-///ipr/recent for recent, /ipr/all for all (option for just dates), /ipr for specific
-
 import (
 	"fmt"
 	"time"
@@ -17,7 +15,7 @@ import (
 // endpoint.
 type iprRequestBody struct {
 	utils.BaseRequestBody
-	//The date of the IPR to return
+	// The date of the IPR to return
 	Date string `json:"date" validate:"optional" example:"09/06/2022"`
 }
 
@@ -32,10 +30,10 @@ type iprRequestBody struct {
 // @Success     200 {object} models.IPRResponse
 // @Router      /ipr [post]
 func PostIPR(ctx *fiber.Ctx) error {
-	//Parse body
+	// Parse body
 	params := new(iprRequestBody)
 
-	//If parsing body fails, error out
+	// If parsing body fails, error out
 	if err := ctx.BodyParser(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
@@ -44,25 +42,25 @@ func PostIPR(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Verify validity of body params
+	// Verify validity of body params
 	bodyParamsValid := true
 
-	//Store parsed date
+	// Store parsed date
 	var parsedDate time.Time
 
-	//Confirm no required body params are empty
+	// Confirm no required body params are empty
 	if params.Username == "" || params.Password == "" || params.Base == "" {
 		bodyParamsValid = false
 	}
 
-	//Check for valid date
+	// Check for valid date
 	date, err := time.Parse("01/02/2006", params.Date)
 
 	if err == nil {
 		parsedDate = date
 	}
 
-	//If body params are invalid, error out
+	// If body params are invalid, error out
 	if !bodyParamsValid {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
@@ -71,13 +69,13 @@ func PostIPR(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Form cache key
+	// Form cache key
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	//Try logging in, or grab cached collector
+	// Try logging in, or grab cached collector
 	collector := cache.CurrentCache().Get(cacheKey)
 
-	//Error out if login fails
+	// Error out if login fails
 	if collector == nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
@@ -86,10 +84,10 @@ func PostIPR(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Get IPR
+	// Get IPR
 	ipr, err := queries.GetIPR(collector.Value(), params.Base, parsedDate)
 
-	//Check if returned value was nil
+	// Check if returned value was nil
 	if err != nil {
 		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"err": true,
@@ -98,7 +96,7 @@ func PostIPR(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//All is well
+	// All is well
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"err": false,
 		"msg": "",

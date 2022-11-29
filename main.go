@@ -40,27 +40,27 @@ import (
 // @tag.description Get data about the transcript
 
 func main() {
-	//Register .env
+	// Register .env
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("DotEnv failed to load. Error: %v", err)
 	}
 
-	//Make new config
+	// Make new config
 	config := configs.FiberConfig()
 
-	//Make app with config
+	// Make app with config
 	app := fiber.New(config)
 
-	//Register middleware(s)
+	// Register middleware(s)
 	middleware.FiberMiddleware(app)
 
-	//Register routes
+	// Register routes
 	routes.SwaggerRoute(app)
 	routes.PublicRoutes(app)
 	routes.NotFoundRoute(app)
 
-	//Start server
+	// Start server
 	if os.Getenv("DEV_STAGE") == "dev" {
 		utils.StartForDev(app)
 	} else {
