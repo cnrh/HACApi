@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
-	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -16,7 +16,7 @@ import (
 type iprRequestBody struct {
 	utils.BaseRequestBody
 	// The date of the IPR to return
-	Date string `json:"date" validate:"optional" example:"09/06/2022"`
+	Date string `json:"date" example:"09/06/2022"`
 }
 
 // PostIPR handles POST requests to the IPR endpoint.
@@ -29,7 +29,7 @@ type iprRequestBody struct {
 // @Produce     json
 // @Success     200 {object} models.IPRResponse
 // @Router      /ipr [post]
-func PostIPR(ctx *fiber.Ctx) error {
+func PostIPR(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
 	params := new(iprRequestBody)
 
@@ -43,25 +43,24 @@ func PostIPR(ctx *fiber.Ctx) error {
 	}
 
 	// Verify validity of body params
-	bodyParamsValid := true
+	valid := true
 
-	// Store parsed date
-	var parsedDate time.Time
-
-	// Confirm no required body params are empty
-	if params.Username == "" || params.Password == "" || params.Base == "" {
-		bodyParamsValid = false
+	if err := server.Validator.Struct(params); err != nil {
+		valid = false
 	}
 
-	// Check for valid date
-	date, err := time.Parse("01/02/2006", params.Date)
+	var date time.Time
 
-	if err == nil {
-		parsedDate = date
+	if params.Date != "" {
+		pdate, err := time.Parse("01/02/2006", params.Date)
+		if err != nil {
+			valid = false
+		} else {
+			date = pdate
+		}
 	}
 
-	// If body params are invalid, error out
-	if !bodyParamsValid {
+	if !valid {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
 			"msg": "Bad body params",
@@ -73,10 +72,10 @@ func PostIPR(ctx *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
 	// Try logging in, or grab cached collector
-	collector := cache.CurrentCache().Get(cacheKey)
+	collector, err := server.Cache.GetOrLogin(cacheKey)
 
 	// Error out if login fails
-	if collector == nil {
+	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
 			"msg": "Invalid username/password/base",
@@ -85,11 +84,11 @@ func PostIPR(ctx *fiber.Ctx) error {
 	}
 
 	// Get IPR
-	ipr, err := queries.GetIPR(collector.Value(), params.Base, parsedDate)
+	ipr, err := queries.GetIPR(server, collector, params.Base, date)
 
 	// Check if returned value was nil
 	if err != nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"err": true,
 			"msg": "IPR not found. Might be an internal error",
 			"ipr": nil,

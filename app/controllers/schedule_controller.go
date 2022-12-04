@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
-	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,7 +24,7 @@ type scheduleRequestBody struct {
 // @Produce     json
 // @Success     200 {object} models.ScheduleResponse
 // @Router      /schedule [post]
-func PostSchedule(ctx *fiber.Ctx) error {
+func PostSchedule(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
 	params := new(scheduleRequestBody)
 
@@ -38,15 +38,7 @@ func PostSchedule(ctx *fiber.Ctx) error {
 	}
 
 	// Check for body param validity
-	bodyParamsValid := true
-
-	// Confirm no required body parameters are empty
-	if params.Username == "" || params.Password == "" || params.Base == "" {
-		bodyParamsValid = false
-	}
-
-	// If body params not valid, return error
-	if !bodyParamsValid {
+	if err := server.Validator.Struct(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":      true,
 			"msg":      "Bad body params",
@@ -58,10 +50,10 @@ func PostSchedule(ctx *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
 	// Try logging in, or grab cached collector
-	collector := cache.CurrentCache().Get(cacheKey)
+	collector, err := server.Cache.GetOrLogin(cacheKey)
 
 	// Error out if login fails
-	if collector == nil {
+	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":      true,
 			"msg":      "Invalid username/password/base",
@@ -70,11 +62,11 @@ func PostSchedule(ctx *fiber.Ctx) error {
 	}
 
 	// Get schedule
-	schedule, err := queries.GetSchedule(collector.Value(), params.Base)
+	schedule, err := queries.GetSchedule(server, collector, params.Base)
 
 	// Check if returned value was nil
 	if err != nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"err":      true,
 			"msg":      "Schedule not found. Might be an internal error",
 			"schedule": nil,

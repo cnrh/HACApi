@@ -2,32 +2,32 @@ package routes
 
 import (
 	"github.com/Threqt1/HACApi/app/controllers"
-	"github.com/gofiber/fiber/v2"
+	"github.com/Threqt1/HACApi/pkg/repository"
+	"github.com/Threqt1/HACApi/pkg/utils"
 )
 
 // PublicRoutes sets up groups of public routes.
-func PublicRoutes(app *fiber.App) {
+func PublicRoutes(server *repository.Server) {
 	// Create group
-	route := app.Group("/api/v1")
+	route := server.App.Group("/api/v1")
 
 	// Routes for POST methods
 
 	// login
-	route.Post("/login", controllers.PostLogin) // register login with the API
-
+	route.Post("/login", utils.WrapController(server, controllers.PostLogin)) // post login
 	// classwork
-	route.Post("/classwork", controllers.PostClasswork) // post classwork
+	route.Post("/classwork", utils.WrapController(server, controllers.PostClasswork)) // post classwork
 
 	// ipr
-	route.Post("/ipr", controllers.PostIPR)        // post interim progress report
-	route.Post("/ipr/all", controllers.PostIPRAll) // post all interim progress reports
+	route.Post("/ipr", utils.WrapController(server, controllers.PostIPR))        // post interim progress report
+	route.Post("/ipr/all", utils.WrapController(server, controllers.PostIPRAll)) // post all interim progress reports
 
 	// report card
-	route.Post("/reportcard", controllers.PostReportCard) // post report card
+	route.Post("/reportcard", utils.WrapController(server, controllers.PostReportCard)) // post report card
 
 	// schedule
-	route.Post("/schedule", controllers.PostSchedule) // post schedule
+	route.Post("/schedule", utils.WrapController(server, controllers.PostSchedule)) // post schedule
 
 	// transcript
-	route.Post("/transcript", controllers.PostTranscript) // post transcript
+	route.Post("/transcript", utils.WrapController(server, controllers.PostTranscript)) // post transcript
 }

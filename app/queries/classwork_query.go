@@ -15,9 +15,9 @@ import (
 
 // GetClasswork accepts a collector, base, and a list of marking periods, and returns an array of parsed classwork
 // objects for the inputted marking periods.
-func GetClasswork(loginCollector *colly.Collector, base string, markingPeriods []int) ([]models.Classwork, error) {
+func GetClasswork(server *repository.Server, collector *colly.Collector, base string, markingPeriods []int) ([]models.Classwork, error) {
 	// Get initial page
-	collector, html, err := utils.NavigateTo(loginCollector, base, repository.CLASSWORK_ROUTE)
+	collector, html, err := server.Scraper.Navigate(collector, base, repository.CLASSWORK_ROUTE)
 
 	// Check for initial success
 	if err != nil {
@@ -52,8 +52,12 @@ func GetClasswork(loginCollector *colly.Collector, base string, markingPeriods [
 		},
 	}
 
+	if len(markingPeriods) == 0 {
+		markingPeriods = append(markingPeriods, recievedInfo.Mp)
+	}
+
 	// Generate classwork
-	recievedClasswork, err := utils.GeneratePipeline[models.Classwork, int](collector, markingPeriods, recievedInfo, formData, functions)
+	recievedClasswork, err := utils.GeneratePipeline[models.Classwork, int](server, collector, markingPeriods, recievedInfo, formData, functions)
 
 	if err != nil {
 		return nil, err

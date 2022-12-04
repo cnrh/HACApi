@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
-	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,7 +24,7 @@ type reportCardRequestBody struct {
 // @Produce     json
 // @Success     200 {object} models.ReportCardResponse
 // @Router      /reportcard [post]
-func PostReportCard(ctx *fiber.Ctx) error {
+func PostReportCard(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
 	params := new(reportCardRequestBody)
 
@@ -38,15 +38,7 @@ func PostReportCard(ctx *fiber.Ctx) error {
 	}
 
 	// Verify validity of body params
-	bodyParamsValid := true
-
-	// Confirm no required body parameters are empty
-	if params.Username == "" || params.Password == "" || params.Base == "" {
-		bodyParamsValid = false
-	}
-
-	// If body params not valid, return error
-	if !bodyParamsValid {
+	if err := server.Validator.Struct(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":        true,
 			"msg":        "Bad body params",
@@ -58,10 +50,10 @@ func PostReportCard(ctx *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
 	// Try logging in, or grab cached collector
-	collector := cache.CurrentCache().Get(cacheKey)
+	collector, err := server.Cache.GetOrLogin(cacheKey)
 
 	// Error out if login fails
-	if collector == nil {
+	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":        true,
 			"msg":        "Invalid username/password/base",
@@ -70,11 +62,11 @@ func PostReportCard(ctx *fiber.Ctx) error {
 	}
 
 	// Get report card
-	reportCard, err := queries.GetReportCard(collector.Value(), params.Base)
+	reportCard, err := queries.GetReportCard(server, collector, params.Base)
 
 	// Check if returned value was nil
 	if err != nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"err":        true,
 			"msg":        "Report Card not found. Might be an internal error",
 			"reportCard": nil,

@@ -3,8 +3,8 @@ package controllers
 import (
 	"fmt"
 
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
-	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,7 +24,7 @@ type loginRequestBody struct {
 // @Produce     json
 // @Success     200 {object} models.LoginResponse
 // @Router      /login [post]
-func PostLogin(ctx *fiber.Ctx) error {
+func PostLogin(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
 	params := new(loginRequestBody)
 
@@ -37,15 +37,7 @@ func PostLogin(ctx *fiber.Ctx) error {
 	}
 
 	// Verify validity of body params
-	bodyParamsValid := true
-
-	// Confirm no required body parameters are empty
-	if params.Username == "" || params.Password == "" || params.Base == "" {
-		bodyParamsValid = false
-	}
-
-	// If body params not valid, return error
-	if !bodyParamsValid {
+	if err := server.Validator.Struct(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
 			"msg": "Bad body params",
@@ -56,7 +48,13 @@ func PostLogin(ctx *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
 	// Cache the user, if not cached already
-	cache.CurrentCache().Get(cacheKey)
+	_, err := server.Cache.GetOrLogin(cacheKey)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"err": true,
+			"msg": "Invalid username/password",
+		})
+	}
 
 	// Success
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{

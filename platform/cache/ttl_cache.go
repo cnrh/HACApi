@@ -1,10 +1,11 @@
 package cache
 
 import (
+	"errors"
 	"strings"
 	"time"
 
-	"github.com/Threqt1/HACApi/pkg/utils"
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/gocolly/colly"
 	"github.com/jellydator/ttlcache/v3"
 )
@@ -12,11 +13,13 @@ import (
 // cache format -
 // key: username\npassword\nbase
 // val: logged-in colly.Collector
-var cache *ttlcache.Cache[string, *colly.Collector] = nil
+type TTLCache struct {
+	Cache *ttlcache.Cache[string, *colly.Collector]
+}
 
-// InitializeCache initializes the local cache which stores
+// NewCache creates a new TTL cache which stores
 // logged-in collectors for username/password combinations.
-func InitializeCache() {
+func NewCache(scraper repository.ScraperProvider) *TTLCache {
 	// Loader to recache username/password combos if they expired and were requested again
 	loader := ttlcache.LoaderFunc[string, *colly.Collector](
 		func(cache *ttlcache.Cache[string, *colly.Collector], key string) *ttlcache.Item[string, *colly.Collector] {
@@ -25,7 +28,7 @@ func InitializeCache() {
 			username, password, base := splitKey[0], splitKey[1], splitKey[2]
 
 			// Login
-			collector, err := utils.Login(base, username, password)
+			collector, err := scraper.Login(base, username, password)
 
 			if err != nil {
 				return nil
@@ -37,18 +40,19 @@ func InitializeCache() {
 		},
 	)
 
-	cache = ttlcache.New(
+	cache := ttlcache.New(
 		ttlcache.WithTTL[string, *colly.Collector](10*time.Minute),
 		ttlcache.WithCapacity[string, *colly.Collector](100),
 		ttlcache.WithLoader[string, *colly.Collector](loader),
 	)
+
+	return &TTLCache{Cache: cache}
 }
 
-// CurrentCache returns the current cache.
-func CurrentCache() *ttlcache.Cache[string, *colly.Collector] {
-	// Initialize the cache if its nil
-	if cache == nil {
-		InitializeCache()
+func (cache TTLCache) GetOrLogin(key string) (*colly.Collector, error) {
+	res := cache.Cache.Get(key)
+	if res == nil {
+		return nil, errors.New("not found")
 	}
-	return cache
+	return res.Value(), nil
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// Login logs a colly collector into home access center.
-func Login(base, username, password string) (*colly.Collector, error) {
+// login logs a colly collector into home access center.
+func login(base, username, password string) (*colly.Collector, error) {
 	// Create a new async collector
 	collector := colly.NewCollector(
 		colly.AllowedDomains(base),

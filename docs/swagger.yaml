@@ -7,6 +7,7 @@ definitions:
       base:
         description: The base URL for the PowerSchool HAC service
         example: homeaccess.katyisd.org
+        minLength: 1
         type: string
       markingPeriods:
         description: The marking period to pull data from
@@ -15,14 +16,17 @@ definitions:
         - 2
         items:
           type: integer
+        maxItems: 6
         type: array
       password:
         description: The password to log in with
         example: j382704
+        minLength: 1
         type: string
       username:
         description: The username to log in with
         example: j1732901
+        minLength: 1
         type: string
     required:
     - base
@@ -34,6 +38,7 @@ definitions:
       base:
         description: The base URL for the PowerSchool HAC service
         example: homeaccess.katyisd.org
+        minLength: 1
         type: string
       datesOnly:
         default: false
@@ -43,10 +48,12 @@ definitions:
       password:
         description: The password to log in with
         example: j382704
+        minLength: 1
         type: string
       username:
         description: The username to log in with
         example: j1732901
+        minLength: 1
         type: string
     required:
     - base
@@ -58,6 +65,7 @@ definitions:
       base:
         description: The base URL for the PowerSchool HAC service
         example: homeaccess.katyisd.org
+        minLength: 1
         type: string
       date:
         description: The date of the IPR to return
@@ -66,10 +74,12 @@ definitions:
       password:
         description: The password to log in with
         example: j382704
+        minLength: 1
         type: string
       username:
         description: The username to log in with
         example: j1732901
+        minLength: 1
         type: string
     required:
     - base
@@ -81,14 +91,17 @@ definitions:
       base:
         description: The base URL for the PowerSchool HAC service
         example: homeaccess.katyisd.org
+        minLength: 1
         type: string
       password:
         description: The password to log in with
         example: j382704
+        minLength: 1
         type: string
       username:
         description: The username to log in with
         example: j1732901
+        minLength: 1
         type: string
     required:
     - base
@@ -100,14 +113,17 @@ definitions:
       base:
         description: The base URL for the PowerSchool HAC service
         example: homeaccess.katyisd.org
+        minLength: 1
         type: string
       password:
         description: The password to log in with
         example: j382704
+        minLength: 1
         type: string
       username:
         description: The username to log in with
         example: j1732901
+        minLength: 1
         type: string
     required:
     - base
@@ -119,14 +135,17 @@ definitions:
       base:
         description: The base URL for the PowerSchool HAC service
         example: homeaccess.katyisd.org
+        minLength: 1
         type: string
       password:
         description: The password to log in with
         example: j382704
+        minLength: 1
         type: string
       username:
         description: The username to log in with
         example: j1732901
+        minLength: 1
         type: string
     required:
     - base
@@ -138,14 +157,17 @@ definitions:
       base:
         description: The base URL for the PowerSchool HAC service
         example: homeaccess.katyisd.org
+        minLength: 1
         type: string
       password:
         description: The password to log in with
         example: j382704
+        minLength: 1
         type: string
       username:
         description: The username to log in with
         example: j1732901
+        minLength: 1
         type: string
     required:
     - base
@@ -295,6 +317,7 @@ definitions:
   models.ReportCard:
     properties:
       entries:
+        description: All the report card entries
         items:
           $ref: '#/definitions/models.ReportCardEntry'
         type: array
@@ -303,17 +326,24 @@ definitions:
     properties:
       absences:
         $ref: '#/definitions/models.Absences'
+        description: Data about absences
       attemptedCredit:
+        description: The amount of credit attempted
         type: string
       averages:
         $ref: '#/definitions/models.SixWeeksGrades'
+        description: Data about grades
       class:
         $ref: '#/definitions/models.Class'
+        description: Information about the class for the entry
       comments:
         $ref: '#/definitions/models.SixWeeksOther'
+        description: Data about comments
       conduct:
         $ref: '#/definitions/models.SixWeeksOther'
+        description: Data about conduct
       earnedCredit:
+        description: The amount of credit earned
         type: string
     type: object
   models.ReportCardResponse:

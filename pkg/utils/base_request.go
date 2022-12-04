@@ -4,9 +4,9 @@ package utils
 // for most POST request bodies.
 type BaseRequestBody struct {
 	// The username to log in with
-	Username string `json:"username" validate:"required" example:"j1732901"`
+	Username string `json:"username" validate:"required,min=1" example:"j1732901"`
 	// The password to log in with
-	Password string `json:"password" validate:"required" example:"j382704"`
+	Password string `json:"password" validate:"required,min=1" example:"j382704"`
 	// The base URL for the PowerSchool HAC service
-	Base string `json:"base" validate:"required" example:"homeaccess.katyisd.org"`
+	Base string `json:"base" validate:"required,min=1" example:"homeaccess.katyisd.org"`
 }

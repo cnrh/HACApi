@@ -7,13 +7,13 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// PostTo posts to a given endpoint with the given formdata, handling failures and returning HTML.
-func PostTo(baseCollector *colly.Collector, base, url string, formData map[string]string) (*colly.Collector, *goquery.Selection, error) {
+// post posts to a given endpoint with the given formdata, handling failures and returning HTML.
+func post(collector *colly.Collector, base, url string, formData map[string]string) (*colly.Collector, *goquery.Selection, error) {
 	// Form URL
 	formedUrl := "https://" + base + url
 
 	// Make a copy of the collector
-	collector := baseCollector.Clone()
+	collector = collector.Clone()
 
 	// Channel to confirm if the page was avaliable
 	pageAvaliableChan := make(chan bool, 1)

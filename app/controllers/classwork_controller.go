@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
-	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -14,7 +14,7 @@ import (
 type classworkRequestBody struct {
 	utils.BaseRequestBody
 	// The marking period to pull data from
-	MarkingPeriods []int `json:"markingPeriods" validate:"optional" example:"1,2"`
+	MarkingPeriods []int `json:"markingPeriods" validate:"max=6,dive,min=1,max=6" example:"1,2"`
 }
 
 // PostClasswork handles POST requests to the classwork endpoint.
@@ -26,7 +26,7 @@ type classworkRequestBody struct {
 // @Produce     json
 // @Success     200 {object} models.ClassworkResponse
 // @Router      /classwork [post]
-func PostClasswork(ctx *fiber.Ctx) error {
+func PostClasswork(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
 	params := new(classworkRequestBody)
 
@@ -40,28 +40,7 @@ func PostClasswork(ctx *fiber.Ctx) error {
 	}
 
 	// Verify validity of body params
-	bodyParamsValid := true
-
-	// Confirm no required body parameters are empty
-	if params.Username == "" || params.Password == "" || params.Base == "" {
-		bodyParamsValid = false
-	}
-
-	// Confirm length of marking periods array is 0 <= len <= 6
-	if mpLen := len(params.MarkingPeriods); mpLen > 6 {
-		bodyParamsValid = false
-	}
-
-	// Confirm marking periods array has values of 1 <= val <= 6
-	for _, mp := range params.MarkingPeriods {
-		if mp < 1 || mp > 6 {
-			bodyParamsValid = false
-			break
-		}
-	}
-
-	// If body params not valid, return error
-	if !bodyParamsValid {
+	if err := server.Validator.Struct(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":       true,
 			"msg":       "Bad body params",
@@ -73,10 +52,10 @@ func PostClasswork(ctx *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
 	// Try logging in, or grab cached collector
-	collector := cache.CurrentCache().Get(cacheKey)
+	collector, err := server.Cache.GetOrLogin(cacheKey)
 
 	// Error out if login fails
-	if collector == nil {
+	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err":       true,
 			"msg":       "Invalid username/password/base",
@@ -85,11 +64,11 @@ func PostClasswork(ctx *fiber.Ctx) error {
 	}
 
 	// Get classwork
-	classwork, err := queries.GetClasswork(collector.Value(), params.Base, params.MarkingPeriods)
+	classwork, err := queries.GetClasswork(server, collector, params.Base, params.MarkingPeriods)
 
 	// Check if returned value was nil
 	if err != nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"err":       true,
 			"msg":       "Classwork not found. Might be an internal error",
 			"classwork": nil,

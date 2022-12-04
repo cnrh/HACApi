@@ -5,10 +5,10 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/Threqt1/HACApi/pkg/repository"
 )
 
-func StartForProd(app *fiber.App) {
+func StartForProd(server *repository.Server) {
 	// Create channel to confirm when connections are closed
 	connsClosedChan := make(chan struct{})
 
@@ -19,7 +19,7 @@ func StartForProd(app *fiber.App) {
 		<-sigint
 
 		// Gracefully shutdown
-		if err := app.Shutdown(); err != nil {
+		if err := server.App.Shutdown(); err != nil {
 			log.Fatalf("Server failed to shutdown. Reason: %v", err)
 		}
 
@@ -30,7 +30,7 @@ func StartForProd(app *fiber.App) {
 	fiberConnURL, _ := BuildConnectionURL("fiber")
 
 	// Start server
-	if err := app.Listen(fiberConnURL); err != nil {
+	if err := server.App.Listen(fiberConnURL); err != nil {
 		log.Fatalf("Server failed to load. Error: %v", err)
 	}
 
@@ -38,12 +38,12 @@ func StartForProd(app *fiber.App) {
 	<-connsClosedChan
 }
 
-func StartForDev(app *fiber.App) {
+func StartForDev(server *repository.Server) {
 	// Build fiber URL
 	fiberConnURL, _ := BuildConnectionURL("fiber")
 
 	// Start server
-	if err := app.Listen(fiberConnURL); err != nil {
+	if err := server.App.Listen(fiberConnURL); err != nil {
 		log.Fatalf("Server failed to load. Error: %v", err)
 	}
 }

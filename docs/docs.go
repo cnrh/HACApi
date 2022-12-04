@@ -259,11 +259,13 @@ const docTemplate = `{
                 "base": {
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
+                    "minLength": 1,
                     "example": "homeaccess.katyisd.org"
                 },
                 "markingPeriods": {
                     "description": "The marking period to pull data from",
                     "type": "array",
+                    "maxItems": 6,
                     "items": {
                         "type": "integer"
                     },
@@ -275,11 +277,13 @@ const docTemplate = `{
                 "password": {
                     "description": "The password to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j382704"
                 },
                 "username": {
                     "description": "The username to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j1732901"
                 }
             }
@@ -295,6 +299,7 @@ const docTemplate = `{
                 "base": {
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
+                    "minLength": 1,
                     "example": "homeaccess.katyisd.org"
                 },
                 "datesOnly": {
@@ -306,11 +311,13 @@ const docTemplate = `{
                 "password": {
                     "description": "The password to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j382704"
                 },
                 "username": {
                     "description": "The username to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j1732901"
                 }
             }
@@ -326,6 +333,7 @@ const docTemplate = `{
                 "base": {
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
+                    "minLength": 1,
                     "example": "homeaccess.katyisd.org"
                 },
                 "date": {
@@ -336,11 +344,13 @@ const docTemplate = `{
                 "password": {
                     "description": "The password to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j382704"
                 },
                 "username": {
                     "description": "The username to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j1732901"
                 }
             }
@@ -356,16 +366,19 @@ const docTemplate = `{
                 "base": {
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
+                    "minLength": 1,
                     "example": "homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j382704"
                 },
                 "username": {
                     "description": "The username to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j1732901"
                 }
             }
@@ -381,16 +394,19 @@ const docTemplate = `{
                 "base": {
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
+                    "minLength": 1,
                     "example": "homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j382704"
                 },
                 "username": {
                     "description": "The username to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j1732901"
                 }
             }
@@ -406,16 +422,19 @@ const docTemplate = `{
                 "base": {
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
+                    "minLength": 1,
                     "example": "homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j382704"
                 },
                 "username": {
                     "description": "The username to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j1732901"
                 }
             }
@@ -431,16 +450,19 @@ const docTemplate = `{
                 "base": {
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
+                    "minLength": 1,
                     "example": "homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j382704"
                 },
                 "username": {
                     "description": "The username to log in with",
                     "type": "string",
+                    "minLength": 1,
                     "example": "j1732901"
                 }
             }
@@ -646,6 +668,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "entries": {
+                    "description": "All the report card entries",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ReportCardEntry"
@@ -657,24 +680,31 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "absences": {
+                    "description": "Data about absences",
                     "$ref": "#/definitions/models.Absences"
                 },
                 "attemptedCredit": {
+                    "description": "The amount of credit attempted",
                     "type": "string"
                 },
                 "averages": {
+                    "description": "Data about grades",
                     "$ref": "#/definitions/models.SixWeeksGrades"
                 },
                 "class": {
+                    "description": "Information about the class for the entry",
                     "$ref": "#/definitions/models.Class"
                 },
                 "comments": {
+                    "description": "Data about comments",
                     "$ref": "#/definitions/models.SixWeeksOther"
                 },
                 "conduct": {
+                    "description": "Data about conduct",
                     "$ref": "#/definitions/models.SixWeeksOther"
                 },
                 "earnedCredit": {
+                    "description": "The amount of credit earned",
                     "type": "string"
                 }
             }

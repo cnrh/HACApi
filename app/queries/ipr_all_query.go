@@ -11,9 +11,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// GetIPR accepts a collector, base, and a date, and outputs the corresponding parsed IPR for
-// the date.
-func GetIPR(server *repository.Server, collector *colly.Collector, base string, date time.Time) ([]models.IPR, error) {
+func GetAllIPRs(server *repository.Server, collector *colly.Collector, base string, datesOnly bool) ([]models.IPR, error) {
 	// Get initial page
 	collector, html, err := server.Scraper.Navigate(collector, base, repository.IPR_ROUTE)
 
@@ -27,6 +25,32 @@ func GetIPR(server *repository.Server, collector *colly.Collector, base string, 
 	currDate, err := time.Parse("01/02/2006", currDateOptionAttr)
 	if err != nil {
 		return nil, err
+	}
+
+	// Get every single avaliable date
+	dateOptionEles := html.Find("#plnMain_ddlIPRDates > option")
+	dates := make([]time.Time, 0, dateOptionEles.Length())
+
+	dateOptionEles.Each(func(_ int, dateOptionEle *goquery.Selection) {
+		// Get text
+		dateText := dateOptionEle.Text()
+
+		// Parse date
+		date, err := time.Parse("01/02/2006", dateText)
+
+		// If no err, push to dates
+		if err == nil {
+			dates = append(dates, date)
+		}
+	})
+
+	// If only dates were needed, convert dates into correct model and return
+	if datesOnly {
+		partialIPRs := make([]models.IPR, 0, len(dates))
+		for _, date := range dates {
+			partialIPRs = append(partialIPRs, models.IPR{Date: date.Format("01/02/2006"), Entries: []models.IPREntry{}})
+		}
+		return partialIPRs, nil
 	}
 
 	// Get other necessary fields
@@ -45,15 +69,7 @@ func GetIPR(server *repository.Server, collector *colly.Collector, base string, 
 		},
 	}
 
-	// Make array of dates
-	dates := make([]time.Time, 0, 1)
-
-	// If date isnt a zero value, append it into array
-	if !date.IsZero() {
-		dates = append(dates, date)
-	}
-
-	// Generate IPR
+	// Generate IPRs
 	recievedIPRs, err := utils.GeneratePipeline[models.IPR, time.Time](server, collector, dates, recievedInfo, formData, functions)
 
 	if err != nil {
@@ -61,19 +77,4 @@ func GetIPR(server *repository.Server, collector *colly.Collector, base string, 
 	}
 
 	return recievedIPRs, nil
-}
-
-// recievedIPRInfo struct representing IPR information
-// for a date that was recieved by the first call.
-type recievedIPRInfo struct {
-	HTML *goquery.Selection // The recieved HTML
-	Date time.Time          // The time related to the IPR recieved
-}
-
-func (rii recievedIPRInfo) Html() *goquery.Selection {
-	return rii.HTML
-}
-
-func (rii recievedIPRInfo) Equal(other time.Time) bool {
-	return other.Equal(rii.Date)
 }

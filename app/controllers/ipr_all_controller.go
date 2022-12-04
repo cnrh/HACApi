@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
-	"github.com/Threqt1/HACApi/platform/cache"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,7 +15,7 @@ import (
 type iprAllRequestBody struct {
 	utils.BaseRequestBody
 	// Whether to return only dates or all the IPRs
-	DatesOnly bool `json:"datesOnly" validate:"optional" example:"true" default:"false"`
+	DatesOnly bool `json:"datesOnly" example:"true" default:"false"`
 }
 
 // PostIPRAll handles POST requests to the IPR/All endpoint.
@@ -26,7 +26,7 @@ type iprAllRequestBody struct {
 // @Produce     json
 // @Success     200 {object} models.IPRResponse
 // @Router      /ipr/all [post]
-func PostIPRAll(ctx *fiber.Ctx) error {
+func PostIPRAll(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
 	params := new(iprAllRequestBody)
 
@@ -40,15 +40,7 @@ func PostIPRAll(ctx *fiber.Ctx) error {
 	}
 
 	// Check for body param validity
-	bodyParamsValid := true
-
-	// Confirm no required body params are empty
-	if params.Username == "" || params.Password == "" || params.Base == "" {
-		bodyParamsValid = false
-	}
-
-	// If body params are invalid, error out
-	if !bodyParamsValid {
+	if err := server.Validator.Struct(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
 			"msg": "Bad body params",
@@ -60,10 +52,10 @@ func PostIPRAll(ctx *fiber.Ctx) error {
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
 	// Try logging in, or grab cached collector
-	collector := cache.CurrentCache().Get(cacheKey)
+	collector, err := server.Cache.GetOrLogin(cacheKey)
 
 	// Error out if login fails
-	if collector == nil {
+	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"err": true,
 			"msg": "Invalid username/password/base",
@@ -72,11 +64,11 @@ func PostIPRAll(ctx *fiber.Ctx) error {
 	}
 
 	// Get IPRs
-	iprs, err := queries.GetAllIPRs(collector.Value(), params.Base, params.DatesOnly)
+	iprs, err := queries.GetAllIPRs(server, collector, params.Base, params.DatesOnly)
 
 	// Check if returned value was nil
 	if err != nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"err": true,
 			"msg": "IPRs not found. Might be an internal error",
 			"ipr": nil,

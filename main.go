@@ -8,7 +8,6 @@ import (
 	"github.com/Threqt1/HACApi/pkg/middleware"
 	"github.com/Threqt1/HACApi/pkg/routes"
 	"github.com/Threqt1/HACApi/pkg/utils"
-	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 
 	_ "github.com/Threqt1/HACApi/docs" // load API Docs files (Swagger)
@@ -46,24 +45,21 @@ func main() {
 		log.Fatalf("DotEnv failed to load. Error: %v", err)
 	}
 
-	// Make new config
-	config := configs.FiberConfig()
-
-	// Make app with config
-	app := fiber.New(config)
+	// Make new server
+	server := configs.ServerConfig()
 
 	// Register middleware(s)
-	middleware.FiberMiddleware(app)
+	middleware.FiberMiddleware(server)
 
 	// Register routes
-	routes.SwaggerRoute(app)
-	routes.PublicRoutes(app)
-	routes.NotFoundRoute(app)
+	routes.SwaggerRoute(server)
+	routes.PublicRoutes(server)
+	routes.NotFoundRoute(server)
 
 	// Start server
 	if os.Getenv("DEV_STAGE") == "dev" {
-		utils.StartForDev(app)
+		utils.StartForDev(server)
 	} else {
-		utils.StartForProd(app)
+		utils.StartForProd(server)
 	}
 }

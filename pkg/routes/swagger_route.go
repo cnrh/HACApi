@@ -1,14 +1,14 @@
 package routes
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/gofiber/swagger"
 )
 
 // SwaggerRoute sets up the swagger docs endpoint.
-func SwaggerRoute(app *fiber.App) {
+func SwaggerRoute(server *repository.Server) {
 	// Create swagger route (docs)
-	route := app.Group("docs")
+	route := server.App.Group("docs")
 
 	// Let swagger handle routes
 	route.Get("*", swagger.HandlerDefault)

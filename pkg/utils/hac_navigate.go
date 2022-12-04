@@ -7,13 +7,13 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// NavigateTo navigates a collector to a specified URL, handling failures and returning HTML.
-func NavigateTo(baseCollector *colly.Collector, base, url string) (*colly.Collector, *goquery.Selection, error) {
+// navigate navigates a collector to a specified URL, handling failures and returning HTML.
+func navigate(collector *colly.Collector, base, url string) (*colly.Collector, *goquery.Selection, error) {
 	// Form full URL
 	formedUrl := "https://" + base + url
 
 	// Make a copy of the collector
-	collector := baseCollector.Clone()
+	collector = collector.Clone()
 
 	// Channel to confirm if the page was avaliable
 	pageAvaliableChan := make(chan bool, 1)
