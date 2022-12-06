@@ -18,7 +18,7 @@ func ParseTranscript(html *goquery.Selection) models.Transcript {
 	transcriptGroupEles := html.Find("td.sg-transcript-group")
 
 	// Allocate memory for the slice
-	transcript.Groups = make([]models.TranscriptGroup, 0, transcriptGroupEles.Length())
+	transcript.Entries = make([]models.TranscriptGroup, 0, transcriptGroupEles.Length())
 
 	var wg sync.WaitGroup
 	var mutex sync.Mutex
@@ -33,7 +33,7 @@ func ParseTranscript(html *goquery.Selection) models.Transcript {
 			mutex.Lock()
 			defer mutex.Unlock()
 			// Append group to slice
-			transcript.Groups = append(transcript.Groups, transcriptGroup)
+			transcript.Entries = append(transcript.Entries, transcriptGroup)
 		}()
 	})
 

@@ -4,34 +4,25 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/app/models"
 	"github.com/Threqt1/HACApi/pkg/repository"
-	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-// iprRequestBody represents the body that is to
-// be passed with a POST request to the IPR
-// endpoint.
-type iprRequestBody struct {
-	utils.BaseRequestBody
-	// The date of the IPR to return
-	Date string `json:"date" example:"09/06/2022"`
-}
-
 // PostIPR handles POST requests to the IPR endpoint.
-// @Description Returns the IPR(s) for the user. If the date parameter is not passed into the body or is invalid, the most recent IPR is returned.
-// @Description It is important the format of the date follows the format "01/02/2006" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.
-// @Description For all possible dates, refer to the "/ipr/all" endpoint.
-// @Tags        ipr
-// @Param       request body iprRequestBody false "Body Params"
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} models.IPRResponse
-// @Router      /ipr [post]
+//
+//	@Description	Returns the IPR(s) for the user. If the date parameter is not passed into the body or is invalid, the most recent IPR is returned.
+//	@Description	It is important the format of the date follows the format "01/02/2006" (01 = month, 02 = day, 2006 = year), with leading zeros like shown in the format.
+//	@Description	For all possible dates, refer to the "/ipr/all" endpoint.
+//	@Tags			ipr
+//	@Param			request	body	models.IprRequestBody	false	"Body Params"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.IPRResponse
+//	@Router			/ipr [post]
 func PostIPR(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
-	params := new(iprRequestBody)
+	params := new(models.IprRequestBody)
 
 	// If parsing body fails, error out
 	if err := ctx.BodyParser(params); err != nil {
@@ -49,15 +40,8 @@ func PostIPR(server *repository.Server, ctx *fiber.Ctx) error {
 		valid = false
 	}
 
-	var date time.Time
-
-	if params.Date != "" {
-		pdate, err := time.Parse("01/02/2006", params.Date)
-		if err != nil {
-			valid = false
-		} else {
-			date = pdate
-		}
+	if _, err := time.Parse("01/02/2006", params.Date); err != nil {
+		valid = false
 	}
 
 	if !valid {
@@ -84,7 +68,7 @@ func PostIPR(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get IPR
-	ipr, err := queries.GetIPR(server, collector, params.Base, date)
+	ipr, err := server.Queries.GetIPR(collector, params)
 
 	// Check if returned value was nil
 	if err != nil {

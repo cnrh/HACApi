@@ -1,4 +1,4 @@
-package utils
+package models
 
 // BaseRequestBody describes a struct with the base properties needed
 // for most POST request bodies.

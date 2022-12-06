@@ -3,30 +3,23 @@ package controllers
 import (
 	"fmt"
 
-	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/app/models"
 	"github.com/Threqt1/HACApi/pkg/repository"
-	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-// requestCardRequestBody represents the
-// request body that is to be passed in
-// with the POST request to this endpoint.
-type reportCardRequestBody struct {
-	utils.BaseRequestBody
-}
-
 // PostReportCard handles POST requests to the report card endpoint.
-// @Description Returns report card data for the user.
-// @Tags        reportcard
-// @Param       request body reportCardRequestBody false "Body params"
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} models.ReportCardResponse
-// @Router      /reportcard [post]
+//
+//	@Description	Returns report card data for the user.
+//	@Tags			reportcard
+//	@Param			request	body	models.ReportCardRequestBody	false	"Body params"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.ReportCardResponse
+//	@Router			/reportcard [post]
 func PostReportCard(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
-	params := new(reportCardRequestBody)
+	params := new(models.ReportCardRequestBody)
 
 	// If parsing fails, error out
 	if err := ctx.BodyParser(params); err != nil {
@@ -62,7 +55,7 @@ func PostReportCard(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get report card
-	reportCard, err := queries.GetReportCard(server, collector, params.Base)
+	reportCard, err := server.Queries.GetReportCard(collector, params)
 
 	// Check if returned value was nil
 	if err != nil {

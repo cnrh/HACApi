@@ -3,30 +3,23 @@ package controllers
 import (
 	"fmt"
 
-	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/app/models"
 	"github.com/Threqt1/HACApi/pkg/repository"
-	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-// scheduleRequestBody represents the
-// request body to be passed in with a
-// POST request to the endpoint.
-type scheduleRequestBody struct {
-	utils.BaseRequestBody
-}
-
 // PostSchedule handles POST request to the schedule endpoint.
-// @Description Returns the schedule for the user.
-// @Tags        schedule
-// @Param       request body scheduleRequestBody false "Body params"
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} models.ScheduleResponse
-// @Router      /schedule [post]
+//
+//	@Description	Returns the schedule for the user.
+//	@Tags			schedule
+//	@Param			request	body	models.ScheduleRequestBody	false	"Body params"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.ScheduleResponse
+//	@Router			/schedule [post]
 func PostSchedule(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
-	params := new(scheduleRequestBody)
+	params := new(models.ScheduleRequestBody)
 
 	// If parsing fails, error out
 	if err := ctx.BodyParser(params); err != nil {
@@ -62,7 +55,7 @@ func PostSchedule(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get schedule
-	schedule, err := queries.GetSchedule(server, collector, params.Base)
+	schedule, err := server.Queries.GetSchedule(collector, params)
 
 	// Check if returned value was nil
 	if err != nil {

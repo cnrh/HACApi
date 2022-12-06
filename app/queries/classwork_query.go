@@ -13,11 +13,10 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// GetClasswork accepts a collector, base, and a list of marking periods, and returns an array of parsed classwork
-// objects for the inputted marking periods.
-func GetClasswork(server *repository.Server, collector *colly.Collector, base string, markingPeriods []int) ([]models.Classwork, error) {
+// getClasswork returns all parsed classwork for the given marking period(s).
+func getClasswork(scraper repository.ScraperProvider, collector *colly.Collector, params *models.ClassworkRequestBody) ([]models.Classwork, error) {
 	// Get initial page
-	collector, html, err := server.Scraper.Navigate(collector, base, repository.CLASSWORK_ROUTE)
+	collector, html, err := scraper.Navigate(collector, params.Base, repository.CLASSWORK_ROUTE)
 
 	// Check for initial success
 	if err != nil {
@@ -42,7 +41,7 @@ func GetClasswork(server *repository.Server, collector *colly.Collector, base st
 	eventvalidation, _ := html.Find("input[name='__EVENTVALIDATION']").Attr("value")
 
 	// Make structs for pipeline generation
-	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.CLASSWORK_ROUTE, Base: base}
+	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.CLASSWORK_ROUTE, Base: params.Base}
 	recievedInfo := recievedClassworkInfo{HTML: html, Mp: currMarkingPer}
 	functions := utils.PipelineFunctions[models.Classwork, int]{
 		GenFormData: utils.MakeClassworkFormData,
@@ -52,12 +51,12 @@ func GetClasswork(server *repository.Server, collector *colly.Collector, base st
 		},
 	}
 
-	if len(markingPeriods) == 0 {
-		markingPeriods = append(markingPeriods, recievedInfo.Mp)
+	if len(params.MarkingPeriods) == 0 {
+		params.MarkingPeriods = append(params.MarkingPeriods, recievedInfo.Mp)
 	}
 
 	// Generate classwork
-	recievedClasswork, err := utils.GeneratePipeline[models.Classwork, int](server, collector, markingPeriods, recievedInfo, formData, functions)
+	recievedClasswork, err := utils.GeneratePipeline[models.Classwork, int](scraper, collector, params.MarkingPeriods, recievedInfo, formData, functions)
 
 	if err != nil {
 		return nil, err

@@ -3,32 +3,23 @@ package controllers
 import (
 	"fmt"
 
-	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/app/models"
 	"github.com/Threqt1/HACApi/pkg/repository"
-	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-// iprAllRequestBody represents the body that is to
-// be passed with a POST request to the /ipr/all
-// endpoint.
-type iprAllRequestBody struct {
-	utils.BaseRequestBody
-	// Whether to return only dates or all the IPRs
-	DatesOnly bool `json:"datesOnly" example:"true" default:"false"`
-}
-
 // PostIPRAll handles POST requests to the IPR/All endpoint.
-// @Description Returns all the IPRs for the user, or just the dates depending on the DatesOnly parameter's value in the body.
-// @Tags        ipr
-// @Param       request body iprAllRequestBody false "Body Params"
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} models.IPRResponse
-// @Router      /ipr/all [post]
+//
+//	@Description	Returns all the IPRs for the user, or just the dates depending on the DatesOnly parameter's value in the body.
+//	@Tags			ipr
+//	@Param			request	body	models.IprAllRequestBody	false	"Body Params"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.IPRResponse
+//	@Router			/ipr/all [post]
 func PostIPRAll(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
-	params := new(iprAllRequestBody)
+	params := new(models.IprAllRequestBody)
 
 	// Error out if fail to parse body
 	if err := ctx.BodyParser(params); err != nil {
@@ -64,7 +55,7 @@ func PostIPRAll(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get IPRs
-	iprs, err := queries.GetAllIPRs(server, collector, params.Base, params.DatesOnly)
+	iprs, err := server.Queries.GetIPRAll(collector, params)
 
 	// Check if returned value was nil
 	if err != nil {

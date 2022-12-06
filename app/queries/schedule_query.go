@@ -7,13 +7,13 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// GetSchedule accepts a collector and a base, and returns a parsed schedule.
-func GetSchedule(server *repository.Server, collector *colly.Collector, base string) (models.Schedule, error) {
+// getSchedule returns the parsed schedule for the user.
+func getSchedule(scraper repository.ScraperProvider, collector *colly.Collector, params *models.ScheduleRequestBody) ([]models.Schedule, error) {
 	// Create empty schedule
-	var schedule models.Schedule
+	var schedule []models.Schedule
 
 	// Get initial page
-	_, html, err := server.Scraper.Navigate(collector, base, repository.SCHEDULE_ROUTE)
+	_, html, err := scraper.Navigate(collector, params.Base, repository.SCHEDULE_ROUTE)
 
 	// Check for initial success
 	if err != nil {
@@ -21,7 +21,7 @@ func GetSchedule(server *repository.Server, collector *colly.Collector, base str
 	}
 
 	// Parse schedule HTML
-	schedule = parsers.ParseSchedule(html)
+	schedule = append(schedule, parsers.ParseSchedule(html))
 
 	return schedule, nil
 }

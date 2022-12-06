@@ -1,5 +1,13 @@
 package models
 
+// ClassworkRequestBody represents the body that is to be passed with
+// the POST request to the classwork endpoint.
+type ClassworkRequestBody struct {
+	BaseRequestBody
+	// The marking period to pull data from
+	MarkingPeriods []int `json:"markingPeriods" validate:"max=6,dive,min=1,max=6" example:"1,2"`
+}
+
 // ClassworkEntry represents all classswork for a single class
 // during a given six weeks.
 type ClassworkEntry struct {
@@ -14,4 +22,11 @@ type ClassworkEntry struct {
 type Classwork struct {
 	MarkingPeriod int              `json:"sixWeeks"` // The marking period the classwork is for
 	Entries       []ClassworkEntry `json:"entries"`  // An array of ClassworkEntry structs containing classwork for each class
+}
+
+// ClassworkResponse represents a JSON response
+// to the Classwork POST request.
+type ClassworkResponse struct {
+	HTTPError             // Error, if one is attached to the response
+	Classwork []Classwork `json:"classwork"` // The resulting classwork
 }

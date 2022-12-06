@@ -1,188 +1,17 @@
-basePath: /api/v1
-consumes:
-- application/json
 definitions:
-  controllers.classworkRequestBody:
-    properties:
-      base:
-        description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
-        minLength: 1
-        type: string
-      markingPeriods:
-        description: The marking period to pull data from
-        example:
-        - 1
-        - 2
-        items:
-          type: integer
-        maxItems: 6
-        type: array
-      password:
-        description: The password to log in with
-        example: j382704
-        minLength: 1
-        type: string
-      username:
-        description: The username to log in with
-        example: j1732901
-        minLength: 1
-        type: string
-    required:
-    - base
-    - password
-    - username
-    type: object
-  controllers.iprAllRequestBody:
-    properties:
-      base:
-        description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
-        minLength: 1
-        type: string
-      datesOnly:
-        default: false
-        description: Whether to return only dates or all the IPRs
-        example: true
-        type: boolean
-      password:
-        description: The password to log in with
-        example: j382704
-        minLength: 1
-        type: string
-      username:
-        description: The username to log in with
-        example: j1732901
-        minLength: 1
-        type: string
-    required:
-    - base
-    - password
-    - username
-    type: object
-  controllers.iprRequestBody:
-    properties:
-      base:
-        description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
-        minLength: 1
-        type: string
-      date:
-        description: The date of the IPR to return
-        example: 09/06/2022
-        type: string
-      password:
-        description: The password to log in with
-        example: j382704
-        minLength: 1
-        type: string
-      username:
-        description: The username to log in with
-        example: j1732901
-        minLength: 1
-        type: string
-    required:
-    - base
-    - password
-    - username
-    type: object
-  controllers.loginRequestBody:
-    properties:
-      base:
-        description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
-        minLength: 1
-        type: string
-      password:
-        description: The password to log in with
-        example: j382704
-        minLength: 1
-        type: string
-      username:
-        description: The username to log in with
-        example: j1732901
-        minLength: 1
-        type: string
-    required:
-    - base
-    - password
-    - username
-    type: object
-  controllers.reportCardRequestBody:
-    properties:
-      base:
-        description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
-        minLength: 1
-        type: string
-      password:
-        description: The password to log in with
-        example: j382704
-        minLength: 1
-        type: string
-      username:
-        description: The username to log in with
-        example: j1732901
-        minLength: 1
-        type: string
-    required:
-    - base
-    - password
-    - username
-    type: object
-  controllers.scheduleRequestBody:
-    properties:
-      base:
-        description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
-        minLength: 1
-        type: string
-      password:
-        description: The password to log in with
-        example: j382704
-        minLength: 1
-        type: string
-      username:
-        description: The username to log in with
-        example: j1732901
-        minLength: 1
-        type: string
-    required:
-    - base
-    - password
-    - username
-    type: object
-  controllers.transcriptRequestBody:
-    properties:
-      base:
-        description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
-        minLength: 1
-        type: string
-      password:
-        description: The password to log in with
-        example: j382704
-        minLength: 1
-        type: string
-      username:
-        description: The username to log in with
-        example: j1732901
-        minLength: 1
-        type: string
-    required:
-    - base
-    - password
-    - username
-    type: object
   models.Absences:
     properties:
       excusedAbsence:
+        description: The amount of excused absences for the class
         type: string
       excusedTardy:
+        description: The amount of excused tardies for the class
         type: string
       unexcusedAbsence:
+        description: The amount of unexcused absences for the class
         type: string
       unexcusedTardy:
+        description: The amount of unexcused tardies for the class
         type: string
     type: object
   models.Assignment:
@@ -251,11 +80,43 @@ definitions:
         description: The average grade for that class
         type: string
       class:
-        $ref: '#/definitions/models.Class'
+        allOf:
+        - $ref: '#/definitions/models.Class'
         description: Class information about the entry
       position:
         description: The position of the class, used for ordering
         type: integer
+    type: object
+  models.ClassworkRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        minLength: 1
+        type: string
+      markingPeriods:
+        description: The marking period to pull data from
+        example:
+        - 1
+        - 2
+        items:
+          type: integer
+        maxItems: 6
+        type: array
+      password:
+        description: The password to log in with
+        example: j382704
+        minLength: 1
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        minLength: 1
+        type: string
+    required:
+    - base
+    - password
+    - username
     type: object
   models.ClassworkResponse:
     properties:
@@ -285,7 +146,8 @@ definitions:
   models.IPREntry:
     properties:
       class:
-        $ref: '#/definitions/models.Class'
+        allOf:
+        - $ref: '#/definitions/models.Class'
         description: Information about the class related to the IPREntry
       grade:
         description: The average at the moment the progress report was submitted
@@ -305,11 +167,102 @@ definitions:
         description: The associated message
         type: string
     type: object
+  models.IprAllRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        minLength: 1
+        type: string
+      datesOnly:
+        default: false
+        description: Whether to return only dates or all the IPRs
+        example: true
+        type: boolean
+      password:
+        description: The password to log in with
+        example: j382704
+        minLength: 1
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        minLength: 1
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
+  models.IprRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        minLength: 1
+        type: string
+      date:
+        description: The date of the IPR to return
+        example: 09/06/2022
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        minLength: 1
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        minLength: 1
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
+  models.Login:
+    properties:
+      base:
+        description: The base URL signed in to
+        type: string
+      password:
+        description: The password used to sign in with
+        type: string
+      username:
+        description: The username used to sign in with
+        type: string
+    type: object
+  models.LoginRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        minLength: 1
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        minLength: 1
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        minLength: 1
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
   models.LoginResponse:
     properties:
       err:
         description: If there was an error
         type: boolean
+      login:
+        allOf:
+        - $ref: '#/definitions/models.Login'
+        description: Data about the login
       msg:
         description: The associated message
         type: string
@@ -325,26 +278,53 @@ definitions:
   models.ReportCardEntry:
     properties:
       absences:
-        $ref: '#/definitions/models.Absences'
+        allOf:
+        - $ref: '#/definitions/models.Absences'
         description: Data about absences
       attemptedCredit:
         description: The amount of credit attempted
         type: string
       averages:
-        $ref: '#/definitions/models.SixWeeksGrades'
+        allOf:
+        - $ref: '#/definitions/models.SixWeeksGrades'
         description: Data about grades
       class:
-        $ref: '#/definitions/models.Class'
+        allOf:
+        - $ref: '#/definitions/models.Class'
         description: Information about the class for the entry
       comments:
-        $ref: '#/definitions/models.SixWeeksOther'
+        allOf:
+        - $ref: '#/definitions/models.SixWeeksOther'
         description: Data about comments
       conduct:
-        $ref: '#/definitions/models.SixWeeksOther'
+        allOf:
+        - $ref: '#/definitions/models.SixWeeksOther'
         description: Data about conduct
       earnedCredit:
         description: The amount of credit earned
         type: string
+    type: object
+  models.ReportCardRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        minLength: 1
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        minLength: 1
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        minLength: 1
+        type: string
+    required:
+    - base
+    - password
+    - username
     type: object
   models.ReportCardResponse:
     properties:
@@ -355,7 +335,8 @@ definitions:
         description: The associated message
         type: string
       reportCard:
-        $ref: '#/definitions/models.ReportCard'
+        allOf:
+        - $ref: '#/definitions/models.ReportCard'
         description: The resulting report card
     type: object
   models.Schedule:
@@ -375,7 +356,8 @@ definitions:
         description: The building the class is in
         type: string
       class:
-        $ref: '#/definitions/models.Class'
+        allOf:
+        - $ref: '#/definitions/models.Class'
         description: Information about the Class related to the Schedule
       days:
         description: The days the class is active for
@@ -388,6 +370,28 @@ definitions:
           type: string
         type: array
     type: object
+  models.ScheduleRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        minLength: 1
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        minLength: 1
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        minLength: 1
+        type: string
+    required:
+    - base
+    - password
+    - username
+    type: object
   models.ScheduleResponse:
     properties:
       err:
@@ -397,7 +401,8 @@ definitions:
         description: The associated message
         type: string
       schedule:
-        $ref: '#/definitions/models.Schedule'
+        allOf:
+        - $ref: '#/definitions/models.Schedule'
         description: The resulting schedule
     type: object
   models.SixWeeksGrades:
@@ -440,16 +445,18 @@ definitions:
     type: object
   models.Transcript:
     properties:
-      groups:
+      entries:
         description: All the transcript groups
         items:
           $ref: '#/definitions/models.TranscriptGroup'
         type: array
       unweighted:
-        $ref: '#/definitions/models.TranscriptGPA'
+        allOf:
+        - $ref: '#/definitions/models.TranscriptGPA'
         description: The unweighted GPA
       weighted:
-        $ref: '#/definitions/models.TranscriptGPA'
+        allOf:
+        - $ref: '#/definitions/models.TranscriptGPA'
         description: The weighted GPA
     type: object
   models.TranscriptGPA:
@@ -496,11 +503,34 @@ definitions:
         description: The average grade for the class
         type: string
       class:
-        $ref: '#/definitions/models.Class'
+        allOf:
+        - $ref: '#/definitions/models.Class'
         description: The class related to the entry
       credit:
         description: The credit earned for the class
         type: string
+    type: object
+  models.TranscriptRequestBody:
+    properties:
+      base:
+        description: The base URL for the PowerSchool HAC service
+        example: homeaccess.katyisd.org
+        minLength: 1
+        type: string
+      password:
+        description: The password to log in with
+        example: j382704
+        minLength: 1
+        type: string
+      username:
+        description: The username to log in with
+        example: j1732901
+        minLength: 1
+        type: string
+    required:
+    - base
+    - password
+    - username
     type: object
   models.TranscriptResponse:
     properties:
@@ -511,14 +541,12 @@ definitions:
         description: The associated message
         type: string
       transcript:
-        $ref: '#/definitions/models.Transcript'
+        allOf:
+        - $ref: '#/definitions/models.Transcript'
         description: The resulting transcript
     type: object
 info:
   contact: {}
-  description: An API to fetch data from Home Access Center.
-  title: HAC Information API
-  version: "1.0"
 paths:
   /classwork:
     post:
@@ -532,7 +560,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/controllers.classworkRequestBody'
+          $ref: '#/definitions/models.ClassworkRequestBody'
       produces:
       - application/json
       responses:
@@ -555,7 +583,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/controllers.iprRequestBody'
+          $ref: '#/definitions/models.IprRequestBody'
       produces:
       - application/json
       responses:
@@ -576,7 +604,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/controllers.iprAllRequestBody'
+          $ref: '#/definitions/models.IprAllRequestBody'
       produces:
       - application/json
       responses:
@@ -598,7 +626,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/controllers.loginRequestBody'
+          $ref: '#/definitions/models.LoginRequestBody'
       produces:
       - application/json
       responses:
@@ -618,7 +646,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/controllers.reportCardRequestBody'
+          $ref: '#/definitions/models.ReportCardRequestBody'
       produces:
       - application/json
       responses:
@@ -638,7 +666,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/controllers.scheduleRequestBody'
+          $ref: '#/definitions/models.ScheduleRequestBody'
       produces:
       - application/json
       responses:
@@ -658,7 +686,7 @@ paths:
         in: body
         name: request
         schema:
-          $ref: '#/definitions/controllers.transcriptRequestBody'
+          $ref: '#/definitions/models.TranscriptRequestBody'
       produces:
       - application/json
       responses:
@@ -668,19 +696,4 @@ paths:
             $ref: '#/definitions/models.TranscriptResponse'
       tags:
       - transcript
-produces:
-- application/json
 swagger: "2.0"
-tags:
-- description: Caching a login with the API
-  name: auth
-- description: Get data about classwork
-  name: classwork
-- description: Get data about interim progress report(s)
-  name: ipr
-- description: Get data about the report card
-  name: reportcard
-- description: Get data about the schedule
-  name: schedule
-- description: Get data about the transcript
-  name: transcript

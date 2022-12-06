@@ -6,12 +6,6 @@ import "github.com/swaggo/swag"
 
 const docTemplate = `{
     "schemes": {{ marshal .Schemes }},
-    "consumes": [
-        "application/json"
-    ],
-    "produces": [
-        "application/json"
-    ],
     "swagger": "2.0",
     "info": {
         "description": "{{escape .Description}}",
@@ -40,7 +34,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/controllers.classworkRequestBody"
+                            "$ref": "#/definitions/models.ClassworkRequestBody"
                         }
                     }
                 ],
@@ -72,7 +66,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/controllers.iprRequestBody"
+                            "$ref": "#/definitions/models.IprRequestBody"
                         }
                     }
                 ],
@@ -104,7 +98,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/controllers.iprAllRequestBody"
+                            "$ref": "#/definitions/models.IprAllRequestBody"
                         }
                     }
                 ],
@@ -136,7 +130,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/controllers.loginRequestBody"
+                            "$ref": "#/definitions/models.LoginRequestBody"
                         }
                     }
                 ],
@@ -168,7 +162,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/controllers.reportCardRequestBody"
+                            "$ref": "#/definitions/models.ReportCardRequestBody"
                         }
                     }
                 ],
@@ -200,7 +194,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/controllers.scheduleRequestBody"
+                            "$ref": "#/definitions/models.ScheduleRequestBody"
                         }
                     }
                 ],
@@ -232,7 +226,7 @@ const docTemplate = `{
                         "name": "request",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/controllers.transcriptRequestBody"
+                            "$ref": "#/definitions/models.TranscriptRequestBody"
                         }
                     }
                 ],
@@ -248,238 +242,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controllers.classworkRequestBody": {
-            "type": "object",
-            "required": [
-                "base",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "base": {
-                    "description": "The base URL for the PowerSchool HAC service",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
-                },
-                "markingPeriods": {
-                    "description": "The marking period to pull data from",
-                    "type": "array",
-                    "maxItems": 6,
-                    "items": {
-                        "type": "integer"
-                    },
-                    "example": [
-                        1,
-                        2
-                    ]
-                },
-                "password": {
-                    "description": "The password to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j382704"
-                },
-                "username": {
-                    "description": "The username to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j1732901"
-                }
-            }
-        },
-        "controllers.iprAllRequestBody": {
-            "type": "object",
-            "required": [
-                "base",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "base": {
-                    "description": "The base URL for the PowerSchool HAC service",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
-                },
-                "datesOnly": {
-                    "description": "Whether to return only dates or all the IPRs",
-                    "type": "boolean",
-                    "default": false,
-                    "example": true
-                },
-                "password": {
-                    "description": "The password to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j382704"
-                },
-                "username": {
-                    "description": "The username to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j1732901"
-                }
-            }
-        },
-        "controllers.iprRequestBody": {
-            "type": "object",
-            "required": [
-                "base",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "base": {
-                    "description": "The base URL for the PowerSchool HAC service",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
-                },
-                "date": {
-                    "description": "The date of the IPR to return",
-                    "type": "string",
-                    "example": "09/06/2022"
-                },
-                "password": {
-                    "description": "The password to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j382704"
-                },
-                "username": {
-                    "description": "The username to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j1732901"
-                }
-            }
-        },
-        "controllers.loginRequestBody": {
-            "type": "object",
-            "required": [
-                "base",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "base": {
-                    "description": "The base URL for the PowerSchool HAC service",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
-                },
-                "password": {
-                    "description": "The password to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j382704"
-                },
-                "username": {
-                    "description": "The username to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j1732901"
-                }
-            }
-        },
-        "controllers.reportCardRequestBody": {
-            "type": "object",
-            "required": [
-                "base",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "base": {
-                    "description": "The base URL for the PowerSchool HAC service",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
-                },
-                "password": {
-                    "description": "The password to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j382704"
-                },
-                "username": {
-                    "description": "The username to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j1732901"
-                }
-            }
-        },
-        "controllers.scheduleRequestBody": {
-            "type": "object",
-            "required": [
-                "base",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "base": {
-                    "description": "The base URL for the PowerSchool HAC service",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
-                },
-                "password": {
-                    "description": "The password to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j382704"
-                },
-                "username": {
-                    "description": "The username to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j1732901"
-                }
-            }
-        },
-        "controllers.transcriptRequestBody": {
-            "type": "object",
-            "required": [
-                "base",
-                "password",
-                "username"
-            ],
-            "properties": {
-                "base": {
-                    "description": "The base URL for the PowerSchool HAC service",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
-                },
-                "password": {
-                    "description": "The password to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j382704"
-                },
-                "username": {
-                    "description": "The username to log in with",
-                    "type": "string",
-                    "minLength": 1,
-                    "example": "j1732901"
-                }
-            }
-        },
         "models.Absences": {
             "type": "object",
             "properties": {
                 "excusedAbsence": {
+                    "description": "The amount of excused absences for the class",
                     "type": "string"
                 },
                 "excusedTardy": {
+                    "description": "The amount of excused tardies for the class",
                     "type": "string"
                 },
                 "unexcusedAbsence": {
+                    "description": "The amount of unexcused absences for the class",
                     "type": "string"
                 },
                 "unexcusedTardy": {
+                    "description": "The amount of unexcused tardies for the class",
                     "type": "string"
                 }
             }
@@ -574,11 +353,55 @@ const docTemplate = `{
                 },
                 "class": {
                     "description": "Class information about the entry",
-                    "$ref": "#/definitions/models.Class"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Class"
+                        }
+                    ]
                 },
                 "position": {
                     "description": "The position of the class, used for ordering",
                     "type": "integer"
+                }
+            }
+        },
+        "models.ClassworkRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "homeaccess.katyisd.org"
+                },
+                "markingPeriods": {
+                    "description": "The marking period to pull data from",
+                    "type": "array",
+                    "maxItems": 6,
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1,
+                        2
+                    ]
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j1732901"
                 }
             }
         },
@@ -623,7 +446,11 @@ const docTemplate = `{
             "properties": {
                 "class": {
                     "description": "Information about the class related to the IPREntry",
-                    "$ref": "#/definitions/models.Class"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Class"
+                        }
+                    ]
                 },
                 "grade": {
                     "description": "The average at the moment the progress report was submitted",
@@ -651,12 +478,132 @@ const docTemplate = `{
                 }
             }
         },
+        "models.IprAllRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "homeaccess.katyisd.org"
+                },
+                "datesOnly": {
+                    "description": "Whether to return only dates or all the IPRs",
+                    "type": "boolean",
+                    "default": false,
+                    "example": true
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j1732901"
+                }
+            }
+        },
+        "models.IprRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "homeaccess.katyisd.org"
+                },
+                "date": {
+                    "description": "The date of the IPR to return",
+                    "type": "string",
+                    "example": "09/06/2022"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j1732901"
+                }
+            }
+        },
+        "models.Login": {
+            "type": "object",
+            "properties": {
+                "base": {
+                    "description": "The base URL signed in to",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "The password used to sign in with",
+                    "type": "string"
+                },
+                "username": {
+                    "description": "The username used to sign in with",
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j1732901"
+                }
+            }
+        },
         "models.LoginResponse": {
             "type": "object",
             "properties": {
                 "err": {
                     "description": "If there was an error",
                     "type": "boolean"
+                },
+                "login": {
+                    "description": "Data about the login",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Login"
+                        }
+                    ]
                 },
                 "msg": {
                     "description": "The associated message",
@@ -681,7 +628,11 @@ const docTemplate = `{
             "properties": {
                 "absences": {
                     "description": "Data about absences",
-                    "$ref": "#/definitions/models.Absences"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Absences"
+                        }
+                    ]
                 },
                 "attemptedCredit": {
                     "description": "The amount of credit attempted",
@@ -689,23 +640,67 @@ const docTemplate = `{
                 },
                 "averages": {
                     "description": "Data about grades",
-                    "$ref": "#/definitions/models.SixWeeksGrades"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SixWeeksGrades"
+                        }
+                    ]
                 },
                 "class": {
                     "description": "Information about the class for the entry",
-                    "$ref": "#/definitions/models.Class"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Class"
+                        }
+                    ]
                 },
                 "comments": {
                     "description": "Data about comments",
-                    "$ref": "#/definitions/models.SixWeeksOther"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SixWeeksOther"
+                        }
+                    ]
                 },
                 "conduct": {
                     "description": "Data about conduct",
-                    "$ref": "#/definitions/models.SixWeeksOther"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SixWeeksOther"
+                        }
+                    ]
                 },
                 "earnedCredit": {
                     "description": "The amount of credit earned",
                     "type": "string"
+                }
+            }
+        },
+        "models.ReportCardRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j1732901"
                 }
             }
         },
@@ -722,7 +717,11 @@ const docTemplate = `{
                 },
                 "reportCard": {
                     "description": "The resulting report card",
-                    "$ref": "#/definitions/models.ReportCard"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ReportCard"
+                        }
+                    ]
                 }
             }
         },
@@ -751,7 +750,11 @@ const docTemplate = `{
                 },
                 "class": {
                     "description": "Information about the Class related to the Schedule",
-                    "$ref": "#/definitions/models.Class"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Class"
+                        }
+                    ]
                 },
                 "days": {
                     "description": "The days the class is active for",
@@ -769,6 +772,34 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ScheduleRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j1732901"
+                }
+            }
+        },
         "models.ScheduleResponse": {
             "type": "object",
             "properties": {
@@ -782,7 +813,11 @@ const docTemplate = `{
                 },
                 "schedule": {
                     "description": "The resulting schedule",
-                    "$ref": "#/definitions/models.Schedule"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Schedule"
+                        }
+                    ]
                 }
             }
         },
@@ -847,7 +882,7 @@ const docTemplate = `{
         "models.Transcript": {
             "type": "object",
             "properties": {
-                "groups": {
+                "entries": {
                     "description": "All the transcript groups",
                     "type": "array",
                     "items": {
@@ -856,11 +891,19 @@ const docTemplate = `{
                 },
                 "unweighted": {
                     "description": "The unweighted GPA",
-                    "$ref": "#/definitions/models.TranscriptGPA"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.TranscriptGPA"
+                        }
+                    ]
                 },
                 "weighted": {
                     "description": "The weighted GPA",
-                    "$ref": "#/definitions/models.TranscriptGPA"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.TranscriptGPA"
+                        }
+                    ]
                 }
             }
         },
@@ -926,11 +969,43 @@ const docTemplate = `{
                 },
                 "class": {
                     "description": "The class related to the entry",
-                    "$ref": "#/definitions/models.Class"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Class"
+                        }
+                    ]
                 },
                 "credit": {
                     "description": "The credit earned for the class",
                     "type": "string"
+                }
+            }
+        },
+        "models.TranscriptRequestBody": {
+            "type": "object",
+            "required": [
+                "base",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "base": {
+                    "description": "The base URL for the PowerSchool HAC service",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "homeaccess.katyisd.org"
+                },
+                "password": {
+                    "description": "The password to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j382704"
+                },
+                "username": {
+                    "description": "The username to log in with",
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "j1732901"
                 }
             }
         },
@@ -947,47 +1022,25 @@ const docTemplate = `{
                 },
                 "transcript": {
                     "description": "The resulting transcript",
-                    "$ref": "#/definitions/models.Transcript"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Transcript"
+                        }
+                    ]
                 }
             }
         }
-    },
-    "tags": [
-        {
-            "description": "Caching a login with the API",
-            "name": "auth"
-        },
-        {
-            "description": "Get data about classwork",
-            "name": "classwork"
-        },
-        {
-            "description": "Get data about interim progress report(s)",
-            "name": "ipr"
-        },
-        {
-            "description": "Get data about the report card",
-            "name": "reportcard"
-        },
-        {
-            "description": "Get data about the schedule",
-            "name": "schedule"
-        },
-        {
-            "description": "Get data about the transcript",
-            "name": "transcript"
-        }
-    ]
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "",
 	Host:             "",
-	BasePath:         "/api/v1",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "HAC Information API",
-	Description:      "An API to fetch data from Home Access Center.",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

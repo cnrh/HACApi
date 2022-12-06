@@ -11,13 +11,18 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// GetIPR accepts a collector, base, and a date, and outputs the corresponding parsed IPR for
-// the date.
-func GetIPR(server *repository.Server, collector *colly.Collector, base string, date time.Time) ([]models.IPR, error) {
+// getIPR returns the latest IPR or the IPR for the date specified.
+func getIPR(scraper repository.ScraperProvider, collector *colly.Collector, params *models.IprRequestBody) ([]models.IPR, error) {
 	// Get initial page
-	collector, html, err := server.Scraper.Navigate(collector, base, repository.IPR_ROUTE)
+	collector, html, err := scraper.Navigate(collector, params.Base, repository.IPR_ROUTE)
 
-	// Check for initial success
+	if err != nil {
+		return nil, err
+	}
+
+	//Parse date
+	date, err := time.Parse("01/02/2006", params.Date)
+
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +40,7 @@ func GetIPR(server *repository.Server, collector *colly.Collector, base string, 
 	eventvalidation, _ := html.Find("input[name='__EVENTVALIDATION']").Attr("value")
 
 	// Make structs for pipeline generation
-	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.IPR_ROUTE, Base: base}
+	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.IPR_ROUTE, Base: params.Base}
 	recievedInfo := recievedIPRInfo{HTML: html, Date: currDate}
 	functions := utils.PipelineFunctions[models.IPR, time.Time]{
 		GenFormData: utils.MakeIPRFormData,
@@ -54,7 +59,7 @@ func GetIPR(server *repository.Server, collector *colly.Collector, base string, 
 	}
 
 	// Generate IPR
-	recievedIPRs, err := utils.GeneratePipeline[models.IPR, time.Time](server, collector, dates, recievedInfo, formData, functions)
+	recievedIPRs, err := utils.GeneratePipeline[models.IPR, time.Time](scraper, collector, dates, recievedInfo, formData, functions)
 
 	if err != nil {
 		return nil, err

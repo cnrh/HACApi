@@ -44,13 +44,13 @@ type IPipelineRecievedValue[V any] interface {
 
 // GeneratePipeline creates a new pipeline which will gather data from a POST request, parse it, and return it in an array format. T represents the model struct,
 // V represents the recieved value's type.
-func GeneratePipeline[T any, V any](server *repository.Server, collector *colly.Collector, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) ([]T, error) {
+func GeneratePipeline[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) ([]T, error) {
 	// Make a done channel for cancelling on error
 	doneChan := make(chan struct{})
 	defer close(doneChan)
 
 	// Recieve parsed data
-	parsedDataChan := pipelineParseHTML(server, collector, doneChan, data, recievedInfo, formData, functions)
+	parsedDataChan := pipelineParseHTML(scraper, collector, doneChan, data, recievedInfo, formData, functions)
 
 	// Append recieved data to array
 	dataArray := make([]T, 0, len(data))
@@ -68,13 +68,13 @@ func GeneratePipeline[T any, V any](server *repository.Server, collector *colly.
 }
 
 // pipelineParseHTML represents the step in the pipeline where raw HTML is recieved through a channel, parsed, and emitted out through another channel.
-func pipelineParseHTML[T any, V any](server *repository.Server, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[T] {
+func pipelineParseHTML[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[T] {
 	// Make a channel to emit parsed data/errors
 	parsedDataChan := make(chan PipelineResponse[T])
 
 	go func() {
 		// Recieve raw HTML
-		rawHTMLChan := pipelineGetHTML(server, collector, doneChan, data, recievedInfo, formData, functions)
+		rawHTMLChan := pipelineGetHTML(scraper, collector, doneChan, data, recievedInfo, formData, functions)
 
 		var wg sync.WaitGroup
 
@@ -120,7 +120,7 @@ func pipelineParseHTML[T any, V any](server *repository.Server, collector *colly
 }
 
 // pipelineGetHTML represents the step in the pipeline where raw HTML is gathered using POST requests, and emitted out using a channel.
-func pipelineGetHTML[T any, V any](server *repository.Server, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[*goquery.Selection] {
+func pipelineGetHTML[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[*goquery.Selection] {
 	// Make channel for outputting raw HTML
 	rawHTMLChan := make(chan PipelineResponse[*goquery.Selection])
 
@@ -157,7 +157,7 @@ func pipelineGetHTML[T any, V any](server *repository.Server, collector *colly.C
 				if recievedInfo.Equal(piece) {
 					html = recievedInfo.Html()
 				} else {
-					_, html, err = server.Scraper.Post(collector, formData.Base, formData.Url, functions.GenFormData(functions.ToFormData(piece), formData))
+					_, html, err = scraper.Post(collector, formData.Base, formData.Url, functions.GenFormData(functions.ToFormData(piece), formData))
 				}
 
 				// Try emitting HTML to channel

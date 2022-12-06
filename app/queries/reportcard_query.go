@@ -7,14 +7,13 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// GetReportCard accepts a collector and a base, and returns a parsed report card for the
-// user logged into the collector.
-func GetReportCard(server *repository.Server, collector *colly.Collector, base string) (models.ReportCard, error) {
+// getReportCard returns the parsed report card for the user.
+func getReportCard(scraper repository.ScraperProvider, collector *colly.Collector, params *models.ReportCardRequestBody) ([]models.ReportCard, error) {
 	// Create empty report card model
-	var reportCard models.ReportCard
+	var reportCard []models.ReportCard
 
 	// Get initial page
-	_, html, err := server.Scraper.Navigate(collector, base, repository.REPORT_CARD_ROUTE)
+	_, html, err := scraper.Navigate(collector, params.Base, repository.REPORT_CARD_ROUTE)
 
 	// Check for initial success
 	if err != nil {
@@ -22,7 +21,7 @@ func GetReportCard(server *repository.Server, collector *colly.Collector, base s
 	}
 
 	// Parse report card HTML
-	reportCard = parsers.ParseReportCard(html)
+	reportCard = append(reportCard, parsers.ParseReportCard(html))
 
 	return reportCard, nil
 }

@@ -3,27 +3,23 @@ package controllers
 import (
 	"fmt"
 
-	"github.com/Threqt1/HACApi/app/queries"
+	"github.com/Threqt1/HACApi/app/models"
 	"github.com/Threqt1/HACApi/pkg/repository"
-	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
-type transcriptRequestBody struct {
-	utils.BaseRequestBody
-}
-
 // PostTranscript handles POST request to the transcript endpoint.
-// @Description Returns the transcript for the user.
-// @Tags        transcript
-// @Param       request body transcriptRequestBody false "Body params"
-// @Accept      json
-// @Produce     json
-// @Success     200 {object} models.TranscriptResponse
-// @Router      /transcript [post]
+//
+//	@Description	Returns the transcript for the user.
+//	@Tags			transcript
+//	@Param			request	body	models.TranscriptRequestBody	false	"Body params"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.TranscriptResponse
+//	@Router			/transcript [post]
 func PostTranscript(server *repository.Server, ctx *fiber.Ctx) error {
 	// Parse body
-	params := new(transcriptRequestBody)
+	params := new(models.TranscriptRequestBody)
 
 	if err := ctx.BodyParser(params); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -58,8 +54,7 @@ func PostTranscript(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get transcript
-	transcript, err := queries.GetTranscript(server, collector, params.Base)
-
+	transcript, err := server.Queries.GetTranscript(collector, params)
 	// Check if returned value was nil
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

@@ -7,12 +7,13 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func GetTranscript(server *repository.Server, collector *colly.Collector, base string) (models.Transcript, error) {
+// getTranscript returns the parsed transcript for the user.
+func getTranscript(scraper repository.ScraperProvider, collector *colly.Collector, params *models.TranscriptRequestBody) ([]models.Transcript, error) {
 	// Create empty transcript
-	var transcript models.Transcript
+	var transcript []models.Transcript
 
 	// Get initial page
-	_, html, err := server.Scraper.Navigate(collector, base, repository.TRANSCRIPT_ROUTE)
+	_, html, err := scraper.Navigate(collector, params.Base, repository.TRANSCRIPT_ROUTE)
 
 	// Check for initial success
 	if err != nil {
@@ -20,7 +21,7 @@ func GetTranscript(server *repository.Server, collector *colly.Collector, base s
 	}
 
 	// Parse transcript HTML
-	transcript = parsers.ParseTranscript(html)
+	transcript = append(transcript, parsers.ParseTranscript(html))
 
 	return transcript, nil
 }

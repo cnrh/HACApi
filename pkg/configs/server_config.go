@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"github.com/Threqt1/HACApi/app/queries"
 	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/Threqt1/HACApi/platform/cache"
@@ -11,6 +12,7 @@ import (
 func ServerConfig() *repository.Server {
 	scraper := utils.NewScraper()
 	cache := cache.NewCache(scraper)
+	queries := queries.NewQueries(scraper)
 	app := fiber.New(FiberConfig())
 	validator := validator.New()
 
@@ -19,5 +21,6 @@ func ServerConfig() *repository.Server {
 		Cache:     cache,
 		App:       app,
 		Validator: validator,
+		Queries:   queries,
 	}
 }
