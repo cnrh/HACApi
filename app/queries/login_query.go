@@ -8,7 +8,7 @@ import (
 
 // getLogin returns the logged-in credentials for the user inputted.
 func getLogin(scraper repository.ScraperProvider, collector *colly.Collector, params *models.LoginRequestBody) ([]models.Login, error) {
-	//Form the response
+	// Form the response
 	loginRes := models.Login{
 		Username: params.Username,
 		Password: params.Password,

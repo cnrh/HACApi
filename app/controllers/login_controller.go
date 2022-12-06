@@ -53,7 +53,7 @@ func PostLogin(server *repository.Server, ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Get response
+	// Get response
 	login, err := server.Queries.GetLogin(collector, params)
 
 	if err != nil {

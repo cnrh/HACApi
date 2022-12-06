@@ -35,10 +35,10 @@ type SixWeeksGrades struct {
 // specifically made for the absences
 // data present in a report card.
 type Absences struct {
-	ExcusedAbsence   string `json:"excusedAbsence"`   //The amount of excused absences for the class
-	UnexcusedAbsence string `json:"unexcusedAbsence"` //The amount of unexcused absences for the class
-	ExcusedTardy     string `json:"excusedTardy"`     //The amount of excused tardies for the class
-	UnexcusedTardy   string `json:"unexcusedTardy"`   //The amount of unexcused tardies for the class
+	ExcusedAbsence   string `json:"excusedAbsence"`   // The amount of excused absences for the class
+	UnexcusedAbsence string `json:"unexcusedAbsence"` // The amount of unexcused absences for the class
+	ExcusedTardy     string `json:"excusedTardy"`     // The amount of excused tardies for the class
+	UnexcusedTardy   string `json:"unexcusedTardy"`   // The amount of unexcused tardies for the class
 }
 
 // ReportCardEntry represents a singular

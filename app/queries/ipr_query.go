@@ -20,7 +20,7 @@ func getIPR(scraper repository.ScraperProvider, collector *colly.Collector, para
 		return nil, err
 	}
 
-	//Parse date
+	// Parse date
 	date, err := time.Parse("01/02/2006", params.Date)
 
 	if err != nil {
