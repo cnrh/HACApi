@@ -8,9 +8,9 @@ import (
 	"github.com/Threqt1/HACApi/app/models"
 )
 
-// ParseReportCard takes in raw HTML and parses it into a report
+// parseReportCard takes in raw HTML and parses it into a report
 // card model.
-func ParseReportCard(html *goquery.Selection) models.ReportCard {
+func parseReportCard(html *goquery.Selection) models.ReportCard {
 	// Make struct to store parsed report card
 	reportCard := models.ReportCard{}
 

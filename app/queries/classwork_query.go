@@ -7,14 +7,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/Threqt1/HACApi/app/models"
-	"github.com/Threqt1/HACApi/app/queries/parsers"
 	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gocolly/colly"
 )
 
 // getClasswork returns all parsed classwork for the given marking period(s).
-func getClasswork(scraper repository.ScraperProvider, collector *colly.Collector, params *models.ClassworkRequestBody) ([]models.Classwork, error) {
+func getClasswork(scraper repository.ScraperProvider, parser repository.ParserProvider, collector *colly.Collector, params models.ClassworkRequestBody) ([]models.Classwork, error) {
 	// Get initial page
 	collector, html, err := scraper.Navigate(collector, params.Base, repository.CLASSWORK_ROUTE)
 
@@ -45,7 +44,7 @@ func getClasswork(scraper repository.ScraperProvider, collector *colly.Collector
 	recievedInfo := recievedClassworkInfo{HTML: html, Mp: currMarkingPer}
 	functions := utils.PipelineFunctions[models.Classwork, int]{
 		GenFormData: utils.MakeClassworkFormData,
-		Parse:       parsers.ParseClasswork,
+		Parse:       parser.ParseClasswork,
 		ToFormData: func(mp int) string {
 			return strconv.Itoa(mp) + markingPerSuffix
 		},

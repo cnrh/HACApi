@@ -8,9 +8,9 @@ import (
 	"github.com/Threqt1/HACApi/app/models"
 )
 
-// ParseSchedule takes in raw HTML and parses it into a schedule
+// parseSchedule takes in raw HTML and parses it into a schedule
 // model.
-func ParseSchedule(html *goquery.Selection) models.Schedule {
+func parseSchedule(html *goquery.Selection) models.Schedule {
 	// Make a struct to store parsed schedule
 	schedule := models.Schedule{}
 

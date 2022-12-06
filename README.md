@@ -62,6 +62,10 @@ Refer to the [API's Swagger Documentation](https://threqt1.github.io/HACApi/)
 
 ## Performance
 
+<h5><strong>Note: The tests were performed under optimal conditions and minimum load on HAC</strong></h5>
+
+<br>
+
 ### /login
 
 | API Response Time (ms) | Login |

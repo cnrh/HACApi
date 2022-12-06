@@ -2,13 +2,12 @@ package queries
 
 import (
 	"github.com/Threqt1/HACApi/app/models"
-	"github.com/Threqt1/HACApi/app/queries/parsers"
 	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/gocolly/colly"
 )
 
 // getReportCard returns the parsed report card for the user.
-func getReportCard(scraper repository.ScraperProvider, collector *colly.Collector, params *models.ReportCardRequestBody) ([]models.ReportCard, error) {
+func getReportCard(scraper repository.ScraperProvider, parser repository.ParserProvider, collector *colly.Collector, params models.ReportCardRequestBody) ([]models.ReportCard, error) {
 	// Create empty report card model
 	var reportCard []models.ReportCard
 
@@ -21,7 +20,7 @@ func getReportCard(scraper repository.ScraperProvider, collector *colly.Collecto
 	}
 
 	// Parse report card HTML
-	reportCard = append(reportCard, parsers.ParseReportCard(html))
+	reportCard = append(reportCard, parser.ParseReportCard(html))
 
 	return reportCard, nil
 }

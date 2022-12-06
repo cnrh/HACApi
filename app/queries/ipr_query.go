@@ -5,14 +5,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/Threqt1/HACApi/app/models"
-	"github.com/Threqt1/HACApi/app/queries/parsers"
 	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gocolly/colly"
 )
 
 // getIPR returns the latest IPR or the IPR for the date specified.
-func getIPR(scraper repository.ScraperProvider, collector *colly.Collector, params *models.IprRequestBody) ([]models.IPR, error) {
+func getIPR(scraper repository.ScraperProvider, parser repository.ParserProvider, collector *colly.Collector, params models.IprRequestBody) ([]models.IPR, error) {
 	// Get initial page
 	collector, html, err := scraper.Navigate(collector, params.Base, repository.IPR_ROUTE)
 
@@ -22,10 +21,6 @@ func getIPR(scraper repository.ScraperProvider, collector *colly.Collector, para
 
 	// Parse date
 	date, err := time.Parse("01/02/2006", params.Date)
-
-	if err != nil {
-		return nil, err
-	}
 
 	// Determine current IPR date
 	currDateOptionAttr := html.Find("#plnMain_ddlIPRDates > option[selected='selected']").Text()
@@ -44,7 +39,7 @@ func getIPR(scraper repository.ScraperProvider, collector *colly.Collector, para
 	recievedInfo := recievedIPRInfo{HTML: html, Date: currDate}
 	functions := utils.PipelineFunctions[models.IPR, time.Time]{
 		GenFormData: utils.MakeIPRFormData,
-		Parse:       parsers.ParseIPR,
+		Parse:       parser.ParseIPR,
 		ToFormData: func(date time.Time) string {
 			return date.Format("1/2/2006 03:04:05 PM")
 		},

@@ -55,7 +55,7 @@ func PostReportCard(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get report card
-	reportCard, err := server.Queries.GetReportCard(collector, params)
+	reportCard, err := server.Querier.GetReportCard(collector, *params)
 
 	// Check if returned value was nil
 	if err != nil {

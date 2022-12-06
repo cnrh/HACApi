@@ -56,7 +56,7 @@ func PostClasswork(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get classwork
-	classwork, err := server.Queries.GetClasswork(collector, params)
+	classwork, err := server.Querier.GetClasswork(collector, *params)
 
 	// Check if returned value was nil
 	if err != nil {

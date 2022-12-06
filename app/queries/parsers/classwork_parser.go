@@ -9,9 +9,9 @@ import (
 	"github.com/Threqt1/HACApi/app/models"
 )
 
-// ParseClasswork takes in the initial page HTML, and outputs
+// parseClasswork takes in the initial page HTML, and outputs
 // the parsed classwork.
-func ParseClasswork(html *goquery.Selection) models.Classwork {
+func parseClasswork(html *goquery.Selection) models.Classwork {
 	// Make a struct to store parsed classwork in, allocate if necessary
 	classwork := models.Classwork{}
 

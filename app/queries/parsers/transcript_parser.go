@@ -8,9 +8,9 @@ import (
 	"github.com/Threqt1/HACApi/app/models"
 )
 
-// ParseTranscript takes in raw HTML and parses it into
+// parseTranscript takes in raw HTML and parses it into
 // a transcript struct.
-func ParseTranscript(html *goquery.Selection) models.Transcript {
+func parseTranscript(html *goquery.Selection) models.Transcript {
 	// Create struct to hold parsed transcript
 	transcript := models.Transcript{}
 

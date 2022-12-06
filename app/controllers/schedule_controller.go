@@ -55,7 +55,7 @@ func PostSchedule(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get schedule
-	schedule, err := server.Queries.GetSchedule(collector, params)
+	schedule, err := server.Querier.GetSchedule(collector, *params)
 
 	// Check if returned value was nil
 	if err != nil {

@@ -40,7 +40,7 @@ func PostIPR(server *repository.Server, ctx *fiber.Ctx) error {
 		valid = false
 	}
 
-	if _, err := time.Parse("01/02/2006", params.Date); err != nil {
+	if _, err := time.Parse("01/02/2006", params.Date); len(params.Date) > 0 && err != nil {
 		valid = false
 	}
 
@@ -68,7 +68,7 @@ func PostIPR(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get IPR
-	ipr, err := server.Queries.GetIPR(collector, params)
+	ipr, err := server.Querier.GetIPR(collector, *params)
 
 	// Check if returned value was nil
 	if err != nil {

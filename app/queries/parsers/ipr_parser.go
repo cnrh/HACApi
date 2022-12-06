@@ -8,9 +8,9 @@ import (
 	"github.com/Threqt1/HACApi/app/models"
 )
 
-// ParseIPR takes in the initial page HTMl, and
+// parseIPR takes in the initial page HTMl, and
 // returns the parsed IPR.
-func ParseIPR(html *goquery.Selection) models.IPR {
+func parseIPR(html *goquery.Selection) models.IPR {
 	// Make a struct to store parsed IPR info to
 	ipr := models.IPR{}
 

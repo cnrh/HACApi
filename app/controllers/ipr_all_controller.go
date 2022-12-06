@@ -55,7 +55,7 @@ func PostIPRAll(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get IPRs
-	iprs, err := server.Queries.GetIPRAll(collector, params)
+	iprs, err := server.Querier.GetIPRAll(collector, *params)
 
 	// Check if returned value was nil
 	if err != nil {

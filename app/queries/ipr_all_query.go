@@ -5,14 +5,13 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/Threqt1/HACApi/app/models"
-	"github.com/Threqt1/HACApi/app/queries/parsers"
 	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/Threqt1/HACApi/pkg/utils"
 	"github.com/gocolly/colly"
 )
 
 // getIPRAll returns all the IPRs registered for the user, or the dates only if specified.
-func getIPRAll(scraper repository.ScraperProvider, collector *colly.Collector, params *models.IprAllRequestBody) ([]models.IPR, error) {
+func getIPRAll(scraper repository.ScraperProvider, parser repository.ParserProvider, collector *colly.Collector, params models.IprAllRequestBody) ([]models.IPR, error) {
 	// Get initial page
 	collector, html, err := scraper.Navigate(collector, params.Base, repository.IPR_ROUTE)
 
@@ -64,7 +63,7 @@ func getIPRAll(scraper repository.ScraperProvider, collector *colly.Collector, p
 	recievedInfo := recievedIPRInfo{HTML: html, Date: currDate}
 	functions := utils.PipelineFunctions[models.IPR, time.Time]{
 		GenFormData: utils.MakeIPRFormData,
-		Parse:       parsers.ParseIPR,
+		Parse:       parser.ParseIPR,
 		ToFormData: func(date time.Time) string {
 			return date.Format("1/2/2006 03:04:05 PM")
 		},

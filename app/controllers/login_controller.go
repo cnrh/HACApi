@@ -54,7 +54,7 @@ func PostLogin(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get response
-	login, err := server.Queries.GetLogin(collector, params)
+	login, err := server.Querier.GetLogin(collector, *params)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

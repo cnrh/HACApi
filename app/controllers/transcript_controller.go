@@ -54,7 +54,7 @@ func PostTranscript(server *repository.Server, ctx *fiber.Ctx) error {
 	}
 
 	// Get transcript
-	transcript, err := server.Queries.GetTranscript(collector, params)
+	transcript, err := server.Querier.GetTranscript(collector, *params)
 	// Check if returned value was nil
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
