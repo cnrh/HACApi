@@ -4,9 +4,11 @@ go 1.19
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/go-playground/validator/v10 v10.11.1
 	github.com/gocolly/colly v1.2.0
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/gofiber/swagger v0.1.8
+	github.com/google/go-cmp v0.5.9
 	github.com/jellydator/ttlcache/v3 v3.0.0
 	github.com/joho/godotenv v1.4.0
 	github.com/swaggo/swag v1.8.8
@@ -15,7 +17,6 @@ require (
 require (
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
 )

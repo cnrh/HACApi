@@ -377,7 +377,7 @@ const docTemplate = `{
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
                     "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
+                    "example": "https://homeaccess.katyisd.org"
                 },
                 "markingPeriods": {
                     "description": "The marking period to pull data from",
@@ -490,7 +490,7 @@ const docTemplate = `{
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
                     "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
+                    "example": "https://homeaccess.katyisd.org"
                 },
                 "datesOnly": {
                     "description": "Whether to return only dates or all the IPRs",
@@ -524,7 +524,7 @@ const docTemplate = `{
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
                     "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
+                    "example": "https://homeaccess.katyisd.org"
                 },
                 "date": {
                     "description": "The date of the IPR to return",
@@ -574,7 +574,7 @@ const docTemplate = `{
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
                     "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
+                    "example": "https://homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",
@@ -688,7 +688,7 @@ const docTemplate = `{
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
                     "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
+                    "example": "https://homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",
@@ -784,7 +784,7 @@ const docTemplate = `{
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
                     "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
+                    "example": "https://homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",
@@ -993,7 +993,7 @@ const docTemplate = `{
                     "description": "The base URL for the PowerSchool HAC service",
                     "type": "string",
                     "minLength": 1,
-                    "example": "homeaccess.katyisd.org"
+                    "example": "https://homeaccess.katyisd.org"
                 },
                 "password": {
                     "description": "The password to log in with",

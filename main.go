@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
 
 	"github.com/Threqt1/HACApi/pkg/configs"
 	"github.com/Threqt1/HACApi/pkg/middleware"
@@ -57,9 +58,34 @@ func main() {
 	routes.NotFoundRoute(server)
 
 	// Start server
-	if os.Getenv("DEV_STAGE") == "dev" {
-		utils.StartForDev(server)
-	} else {
-		utils.StartForProd(server)
+
+	// Create channel to confirm when connections are closed
+	connsClosedChan := make(chan struct{})
+
+	go func() {
+		// Catch os signals
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		// Gracefully shutdown
+		if err := server.App.Shutdown(); err != nil {
+			log.Fatalf("Server failed to shutdown. Reason: %v", err)
+		}
+
+		close(connsClosedChan)
+	}()
+
+	// Build fiber URL
+	fiberConnURL, _ := utils.BuildConnectionURL("fiber")
+
+	// Start server
+	err = server.App.Listen(fiberConnURL)
+
+	if err != nil {
+		log.Fatalf(err.Error())
 	}
+
+	// Wait till conns are closed before stopping
+	<-connsClosedChan
 }

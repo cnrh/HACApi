@@ -13,8 +13,8 @@ type CacheProvider interface {
 
 type ScraperProvider interface {
 	Login(base, username, password string) (*colly.Collector, error)
-	Navigate(collector *colly.Collector, base, url string) (*colly.Collector, *goquery.Selection, error)
-	Post(collector *colly.Collector, base, url string, formData map[string]string) (*colly.Collector, *goquery.Selection, error)
+	Navigate(collector *colly.Collector, url, endpoint string) (*colly.Collector, *goquery.Selection, error)
+	Post(collector *colly.Collector, url, endpoint string, formData map[string]string) (*colly.Collector, *goquery.Selection, error)
 }
 
 type ValidationProvider interface {

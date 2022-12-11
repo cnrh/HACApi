@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"sync"
 
 	"github.com/PuerkitoBio/goquery"
@@ -8,10 +9,9 @@ import (
 	"github.com/gocolly/colly"
 )
 
-// PipelineResponse represents a intermediary
-// response between pipelines, used extensively
-// in the queries package.
-type PipelineResponse[T any] struct {
+// pipelineResponse represents a intermediary
+// response between pipelines
+type pipelineResponse[T any] struct {
 	Value T
 	Err   error
 }
@@ -34,17 +34,20 @@ type PipelineFunctions[T any, V any] struct {
 	ToFormData  func(V) string
 }
 
-// IPipleineRecievedValue represents an interface which
+// PipleineRecievedValue represents an interface which
 // contains the needed methods for the pipeline to correctly
 // handle the recievedInformation parameter.
-type IPipelineRecievedValue[V any] interface {
+type PipelineRecievedValue[V any] interface {
 	Html() *goquery.Selection
 	Equal(V) bool
 }
 
+// Represents an error due to no found HTML
+var ErrorBadHTML = errors.New("bad html")
+
 // GeneratePipeline creates a new pipeline which will gather data from a POST request, parse it, and return it in an array format. T represents the model struct,
 // V represents the recieved value's type.
-func GeneratePipeline[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) ([]T, error) {
+func GeneratePipeline[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, data []V, recievedInfo PipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) ([]T, error) {
 	// Make a done channel for cancelling on error
 	doneChan := make(chan struct{})
 	defer close(doneChan)
@@ -68,9 +71,9 @@ func GeneratePipeline[T any, V any](scraper repository.ScraperProvider, collecto
 }
 
 // pipelineParseHTML represents the step in the pipeline where raw HTML is recieved through a channel, parsed, and emitted out through another channel.
-func pipelineParseHTML[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[T] {
+func pipelineParseHTML[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo PipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan pipelineResponse[T] {
 	// Make a channel to emit parsed data/errors
-	parsedDataChan := make(chan PipelineResponse[T])
+	parsedDataChan := make(chan pipelineResponse[T])
 
 	go func() {
 		// Recieve raw HTML
@@ -82,13 +85,19 @@ func pipelineParseHTML[T any, V any](scraper repository.ScraperProvider, collect
 		for res := range rawHTMLChan {
 			// If error, cascade it down and break
 			if res.Err != nil {
-				parsedDataChan <- PipelineResponse[T]{Err: res.Err}
+				parsedDataChan <- pipelineResponse[T]{Err: res.Err}
+				break
+			}
+
+			// If no HTML, error out
+			if res.Value == nil {
+				parsedDataChan <- pipelineResponse[T]{Err: ErrorBadHTML}
 				break
 			}
 
 			// Otherwise, start goroutine to parse
 			wg.Add(1)
-			go func(res PipelineResponse[*goquery.Selection]) {
+			go func(res pipelineResponse[*goquery.Selection]) {
 				defer wg.Done()
 
 				// Check if done was called
@@ -103,7 +112,7 @@ func pipelineParseHTML[T any, V any](scraper repository.ScraperProvider, collect
 
 				// Try emitting parsed data
 				select {
-				case parsedDataChan <- PipelineResponse[T]{Value: parsedData, Err: nil}:
+				case parsedDataChan <- pipelineResponse[T]{Value: parsedData, Err: nil}:
 				case <-doneChan:
 				}
 			}(res)
@@ -120,9 +129,9 @@ func pipelineParseHTML[T any, V any](scraper repository.ScraperProvider, collect
 }
 
 // pipelineGetHTML represents the step in the pipeline where raw HTML is gathered using POST requests, and emitted out using a channel.
-func pipelineGetHTML[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo IPipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan PipelineResponse[*goquery.Selection] {
+func pipelineGetHTML[T any, V any](scraper repository.ScraperProvider, collector *colly.Collector, doneChan <-chan struct{}, data []V, recievedInfo PipelineRecievedValue[V], formData PartialFormData, functions PipelineFunctions[T, V]) chan pipelineResponse[*goquery.Selection] {
 	// Make channel for outputting raw HTML
-	rawHTMLChan := make(chan PipelineResponse[*goquery.Selection])
+	rawHTMLChan := make(chan pipelineResponse[*goquery.Selection])
 
 	// Get HTML concurrently
 	go func() {
@@ -131,7 +140,7 @@ func pipelineGetHTML[T any, V any](scraper repository.ScraperProvider, collector
 		// If no data, return recieved info
 		if len(data) == 0 {
 			select {
-			case rawHTMLChan <- PipelineResponse[*goquery.Selection]{Value: recievedInfo.Html(), Err: nil}:
+			case rawHTMLChan <- pipelineResponse[*goquery.Selection]{Value: recievedInfo.Html(), Err: nil}:
 			case <-doneChan:
 			}
 		}
@@ -162,7 +171,7 @@ func pipelineGetHTML[T any, V any](scraper repository.ScraperProvider, collector
 
 				// Try emitting HTML to channel
 				select {
-				case rawHTMLChan <- PipelineResponse[*goquery.Selection]{Value: html, Err: err}:
+				case rawHTMLChan <- pipelineResponse[*goquery.Selection]{Value: html, Err: err}:
 				case <-doneChan:
 				}
 			}(piece)

@@ -91,7 +91,7 @@ definitions:
     properties:
       base:
         description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
+        example: https://homeaccess.katyisd.org
         minLength: 1
         type: string
       markingPeriods:
@@ -171,7 +171,7 @@ definitions:
     properties:
       base:
         description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
+        example: https://homeaccess.katyisd.org
         minLength: 1
         type: string
       datesOnly:
@@ -198,7 +198,7 @@ definitions:
     properties:
       base:
         description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
+        example: https://homeaccess.katyisd.org
         minLength: 1
         type: string
       date:
@@ -236,7 +236,7 @@ definitions:
     properties:
       base:
         description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
+        example: https://homeaccess.katyisd.org
         minLength: 1
         type: string
       password:
@@ -308,7 +308,7 @@ definitions:
     properties:
       base:
         description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
+        example: https://homeaccess.katyisd.org
         minLength: 1
         type: string
       password:
@@ -374,7 +374,7 @@ definitions:
     properties:
       base:
         description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
+        example: https://homeaccess.katyisd.org
         minLength: 1
         type: string
       password:
@@ -514,7 +514,7 @@ definitions:
     properties:
       base:
         description: The base URL for the PowerSchool HAC service
-        example: homeaccess.katyisd.org
+        example: https://homeaccess.katyisd.org
         minLength: 1
         type: string
       password:

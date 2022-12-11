@@ -2,13 +2,18 @@ package utils
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/Threqt1/HACApi/pkg/repository"
 	"github.com/gocolly/colly"
 )
 
+var ErrorInvalidCredentials = errors.New("invalid credentials")
+
 // login logs a colly collector into home access center.
-func login(base, username, password string) (*colly.Collector, error) {
+func login(url, username, password string) (*colly.Collector, error) {
+	base := strings.Split(url, "//")[1]
+
 	// Create a new async collector
 	collector := colly.NewCollector(
 		colly.AllowedDomains(base),
@@ -19,13 +24,21 @@ func login(base, username, password string) (*colly.Collector, error) {
 	// Create a channel to get the request verification token from HTML
 	reqVerChan := make(chan string, 1)
 
+	// Create a channel to catch errors
+	errChan := make(chan error, 1)
+
 	// Retrieve request verification token from HTML
 	collector.OnHTML("input[name='__RequestVerificationToken']", func(elem *colly.HTMLElement) {
 		reqVerChan <- elem.Attr("value")
 	})
 
+	// Handle any errors
+	collector.OnError(func(r *colly.Response, err error) {
+		errChan <- err
+	})
+
 	// Form login URL
-	loginURL := "https://" + base + repository.LOGIN_ROUTE
+	loginURL := url + repository.LOGIN_ROUTE
 
 	// Get request verification token, abort if failed
 	err := collector.Visit(loginURL)
@@ -38,8 +51,14 @@ func login(base, username, password string) (*colly.Collector, error) {
 	// Create clone collector, let's login for real
 	collector = collector.Clone()
 
-	// Get Request Verification token
-	reqVerToken := <-reqVerChan
+	// Get Request Verification token or return an error
+	var reqVerToken string
+
+	select {
+	case reqVerToken = <-reqVerChan:
+	case err := <-errChan:
+		return nil, err
+	}
 
 	// Create payload data
 	payload := map[string]string{
@@ -58,23 +77,26 @@ func login(base, username, password string) (*colly.Collector, error) {
 	loginWrongChan := make(chan bool, 1)
 
 	// Form URL we expect to be at after response
-	expectedURL := "https://" + base + "/HomeAccess/Classes/Classwork"
+	expectedURL := url + "/HomeAccess/Classes/Classwork"
 
 	// Check if we are at expected URL. If not, login failed
 	collector.OnResponse(func(res *colly.Response) {
 		if res.Request.URL.String() != expectedURL {
 			loginWrongChan <- true
-		} else {
-			loginWrongChan <- false
 		}
 	})
 
 	// Set request headers
 	collector.OnRequest(func(req *colly.Request) {
 		req.Headers.Set("Host", base)
-		req.Headers.Set("Origin", "https://"+base)
+		req.Headers.Set("Origin", url)
 		req.Headers.Set("Referer", base)
 		req.Headers.Set("__RequestVerificationToken", reqVerToken)
+	})
+
+	// Handle errors
+	collector.OnError(func(r *colly.Response, err error) {
+		errChan <- err
 	})
 
 	// Post to login
@@ -86,8 +108,13 @@ func login(base, username, password string) (*colly.Collector, error) {
 		return nil, err
 	}
 
-	if <-loginWrongChan {
-		return nil, errors.New("invalid credentials")
+	// Handle any errors
+	select {
+	case <-loginWrongChan:
+		return nil, ErrorInvalidCredentials
+	case err := <-errChan:
+		return nil, err
+	default:
 	}
 
 	// Return logged in collector

@@ -8,5 +8,5 @@ type BaseRequestBody struct {
 	// The password to log in with
 	Password string `json:"password" validate:"required,min=1" example:"j382704"`
 	// The base URL for the PowerSchool HAC service
-	Base string `json:"base" validate:"required,min=1" example:"homeaccess.katyisd.org"`
+	Base string `json:"base" validate:"required,min=1" example:"https://homeaccess.katyisd.org"`
 }
