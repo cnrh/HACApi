@@ -1,7 +1,7 @@
 package utils
 
 // MakeClassworkFormData creates form data for a POST request to the HAC Classwork endpoint.
-func MakeClassworkFormData(mp string, formData PartialFormData) map[string]string {
+func MakeClassworkFormData(mp string, formData *PartialFormData) map[string]string {
 	return map[string]string{
 		"__EVENTTARGET":                              "ctl00$plnMain$btnRefreshView",
 		"__EVENTARGUMENT":                            "",
@@ -62,7 +62,8 @@ func MakeClassworkFormData(mp string, formData PartialFormData) map[string]strin
 	}
 }
 
-func MakeIPRFormData(date string, formData PartialFormData) map[string]string {
+// MakeIPRFormData creates form data for a POST request to the HAC IPR endpoint.
+func MakeIPRFormData(date string, formData *PartialFormData) map[string]string {
 	return map[string]string{
 		"__EVENTTARGET":                  "ctl00$plnMain$ddlIPRDates",
 		"__EVENTARGUMENT":                "",

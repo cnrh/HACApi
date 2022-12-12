@@ -9,63 +9,65 @@ import (
 
 // post posts to a given endpoint with the given formdata, handling failures and returning HTML.
 func post(collector *colly.Collector, url, endpoint string, formData map[string]string) (*colly.Collector, *goquery.Selection, error) {
-	// Form URL
+	// Form URL.
 	formedUrl := url + endpoint
 
-	// Make a copy of the collector
 	collector = collector.Clone()
 
-	// Channel to confirm if the page was avaliable
+	// Make a channel to signal if the page is avaliable.
 	pageAvaliableChan := make(chan bool, 1)
 
-	// Channel to handle any errors
+	// Make a channel to signal any errors.
 	errChan := make(chan error, 1)
 
-	// Channel to pass HTML through
+	// Make a channel to pass HTML through.
 	pageHTMLChan := make(chan *colly.HTMLElement, 1)
 
-	// Check if page is avaliable on response
+	// Check if page is avaliable on response.
 	collector.OnResponse(func(res *colly.Response) {
-		// If final URL equal to input URL, it's successful
+		// If final URL is not equal to input URL, the request failed.
 		if res.Request.URL.String() != formedUrl {
 			pageAvaliableChan <- false
 		}
 	})
 
-	// Pass HTML to the receiving channel
+	// Pass HTML to the receiving channel.
 	collector.OnHTML("body", func(html *colly.HTMLElement) {
 		pageHTMLChan <- html
 	})
 
-	// Handle any errors
+	// Handle any errors.
 	collector.OnError(func(r *colly.Response, err error) {
 		errChan <- err
 	})
 
+	// Set request headers.
 	collector.OnRequest(func(req *colly.Request) {
 		req.Headers.Set("Host", strings.Split(url, "//")[1])
 		req.Headers.Set("Origin", url)
 		req.Headers.Set("Referer", formedUrl)
 	})
 
-	// Visit page
+	// Visit page and wait.
 	err := collector.Post(formedUrl, formData)
 	collector.Wait()
 
-	// Return false if not avaliable, or if there was an error
+	// If there was an initial error, return it.
 	if err != nil {
 		return nil, nil, err
 	}
 
-	// Handle any other errors
+	// Handle errors
 	select {
+	// Page not avaliable.
 	case <-pageAvaliableChan:
 		return nil, nil, ErrorPageNotAvaliable
+	// Colly error.
 	case err := <-errChan:
 		return nil, nil, err
 	default:
 	}
 
-	// Return HTML if all is well
+	// Return HTML if it was a success.
 	return collector, (<-pageHTMLChan).DOM, nil
 }

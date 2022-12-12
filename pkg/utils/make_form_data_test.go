@@ -6,10 +6,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+// Represents the partial form data used across all MakeFormData() tests.
 var testMakeFormData_FormData = PartialFormData{ViewState: "A", ViewStateGen: "B", EventValidation: "C"}
 
+// Test if MakeClassworkFormData() works.
 func TestMakeClassworkFormData(t *testing.T) {
-	// Make expected
+	// Make expected value.
 	expected := map[string]string{
 		"__EVENTTARGET":                              "ctl00$plnMain$btnRefreshView",
 		"__EVENTARGUMENT":                            "",
@@ -69,16 +71,17 @@ func TestMakeClassworkFormData(t *testing.T) {
 		"ctl00$plnMain$ddlOrderBy":                   "Class",
 	}
 
-	// Test
-	got := MakeClassworkFormData("5", testMakeFormData_FormData)
+	// Test.
+	got := MakeClassworkFormData("5", &testMakeFormData_FormData)
 
 	if diff := cmp.Diff(expected, got); diff != "" {
 		t.Fatalf("Failed for MakeClassworkFormData() (-want, +got)\n%s", diff)
 	}
 }
 
+// Test if MakeIPRFormData() works.
 func TestMakeIPRFormData(t *testing.T) {
-	// Expected
+	// Make expected value.
 	expected := map[string]string{
 		"__EVENTTARGET":                  "ctl00$plnMain$ddlIPRDates",
 		"__EVENTARGUMENT":                "",
@@ -93,8 +96,8 @@ func TestMakeIPRFormData(t *testing.T) {
 		"ctl00$plnMain$hdnTitleNoRecord": "Interim Progress Report",
 	}
 
-	// Test
-	got := MakeIPRFormData("5", testMakeFormData_FormData)
+	// Test.
+	got := MakeIPRFormData("5", &testMakeFormData_FormData)
 
 	if diff := cmp.Diff(expected, got); diff != "" {
 		t.Fatalf("Failed for MakeIPRFormData() (-want, +got)\n%s", diff)

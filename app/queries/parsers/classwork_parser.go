@@ -112,7 +112,7 @@ func parseClassworkAssignment(assignmentEle *goquery.Selection) models.Assignmen
 	assignmentEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
 		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) == 0 {
+		if text == "" {
 			return
 		}
 

@@ -22,6 +22,10 @@ func getIPR(scraper repository.ScraperProvider, parser repository.ParserProvider
 	// Parse date
 	date, err := time.Parse("01/02/2006", params.Date)
 
+	if err != nil {
+		return nil, err
+	}
+
 	// Determine current IPR date
 	currDateOptionAttr := html.Find("#plnMain_ddlIPRDates > option[selected='selected']").Text()
 	currDate, err := time.Parse("01/02/2006", currDateOptionAttr)
@@ -38,8 +42,10 @@ func getIPR(scraper repository.ScraperProvider, parser repository.ParserProvider
 	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.IPR_ROUTE, Base: params.Base}
 	recievedInfo := recievedIPRInfo{HTML: html, Date: currDate}
 	functions := utils.PipelineFunctions[models.IPR, time.Time]{
-		GenFormData: utils.MakeIPRFormData,
-		Parse:       parser.ParseIPR,
+		GenFormData: func(date string, pfd utils.PartialFormData) map[string]string {
+			return utils.MakeIPRFormData(date, &pfd)
+		},
+		Parse: parser.ParseIPR,
 		ToFormData: func(date time.Time) string {
 			return date.Format("1/2/2006 03:04:05 PM")
 		},
@@ -54,7 +60,7 @@ func getIPR(scraper repository.ScraperProvider, parser repository.ParserProvider
 	}
 
 	// Generate IPR
-	recievedIPRs, err := utils.GeneratePipeline[models.IPR, time.Time](scraper, collector, dates, recievedInfo, formData, functions)
+	recievedIPRs, err := utils.GeneratePipeline[models.IPR, time.Time](scraper, collector, dates, recievedInfo, &formData, functions)
 
 	if err != nil {
 		return nil, err

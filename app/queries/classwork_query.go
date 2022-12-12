@@ -43,8 +43,10 @@ func getClasswork(scraper repository.ScraperProvider, parser repository.ParserPr
 	formData := utils.PartialFormData{ViewState: viewstate, ViewStateGen: viewstategen, EventValidation: eventvalidation, Url: repository.CLASSWORK_ROUTE, Base: params.Base}
 	recievedInfo := recievedClassworkInfo{HTML: html, Mp: currMarkingPer}
 	functions := utils.PipelineFunctions[models.Classwork, int]{
-		GenFormData: utils.MakeClassworkFormData,
-		Parse:       parser.ParseClasswork,
+		GenFormData: func(mp string, pfd utils.PartialFormData) map[string]string {
+			return utils.MakeClassworkFormData(mp, &pfd)
+		},
+		Parse: parser.ParseClasswork,
 		ToFormData: func(mp int) string {
 			return strconv.Itoa(mp) + markingPerSuffix
 		},
@@ -55,7 +57,7 @@ func getClasswork(scraper repository.ScraperProvider, parser repository.ParserPr
 	}
 
 	// Generate classwork
-	recievedClasswork, err := utils.GeneratePipeline[models.Classwork, int](scraper, collector, params.MarkingPeriods, recievedInfo, formData, functions)
+	recievedClasswork, err := utils.GeneratePipeline[models.Classwork, int](scraper, collector, params.MarkingPeriods, recievedInfo, &formData, functions)
 
 	if err != nil {
 		return nil, err

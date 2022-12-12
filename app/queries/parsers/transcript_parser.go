@@ -77,7 +77,7 @@ func parseTranscriptGroup(transcriptGroupEle *goquery.Selection) models.Transcri
 	transcriptGroupEle.Find("table:first-child td:nth-child(even)").Each(func(i int, dataEle *goquery.Selection) {
 		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) == 0 {
+		if text == "" {
 			return
 		}
 
@@ -115,8 +115,6 @@ func parseTranscriptGroup(transcriptGroupEle *goquery.Selection) models.Transcri
 
 	wg.Wait()
 
-	// transcriptGroup.TotalCredit = &totalCredit
-
 	return transcriptGroup
 }
 
@@ -130,7 +128,7 @@ func parseTranscriptGroupEntry(transcriptGroupEntryEle *goquery.Selection) model
 	transcriptGroupEntryEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
 		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) == 0 {
+		if text == "" {
 			return
 		}
 
@@ -159,7 +157,7 @@ func parseTranscriptGPA(transcriptGPAEle *goquery.Selection) models.TranscriptGP
 	transcriptGPAEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
 		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) == 0 {
+		if text == "" {
 			return
 		}
 

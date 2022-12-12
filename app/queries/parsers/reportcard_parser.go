@@ -51,7 +51,7 @@ func parseReportCardEntry(reportCardEntryEle *goquery.Selection) models.ReportCa
 	reportCardEntryEle.Find("td").Each(func(i int, dataEle *goquery.Selection) {
 		// Parse text, return if there is none
 		text := strings.TrimSpace(dataEle.Text())
-		if len(text) == 0 {
+		if text == "" {
 			return
 		}
 

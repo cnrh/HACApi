@@ -11,19 +11,19 @@ import (
 )
 
 func ServerConfig() *repository.Server {
-	scraper := utils.NewScraper()
-	cache := cache.NewCache(scraper)
-	parser := parsers.NewParser()
-	querier := queries.NewQuerier(scraper, parser)
-	app := fiber.New(FiberConfig())
-	validator := validator.New()
+	scraperService := utils.NewScraper()
+	cacheService := cache.NewCache(scraperService)
+	parserService := parsers.NewParser()
+	queryService := queries.NewQuerier(scraperService, parserService)
+	appService := fiber.New(FiberConfig())
+	validatorService := validator.New()
 
 	return &repository.Server{
-		Scraper:   scraper,
-		Cache:     cache,
-		App:       app,
-		Validator: validator,
-		Querier:   querier,
-		Parser:    parser,
+		Scraper:   scraperService,
+		Cache:     cacheService,
+		App:       appService,
+		Validator: validatorService,
+		Querier:   queryService,
+		Parser:    parserService,
 	}
 }
