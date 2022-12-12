@@ -11,5 +11,7 @@ func SwaggerRoute(server *repository.Server) {
 	route := server.App.Group("docs")
 
 	// Let swagger handle routes
-	route.Get("*", swagger.HandlerDefault)
+	route.Get("*", swagger.New(swagger.Config{
+		CustomStyle: "../../../docs/swagger-flattop-theme.css",
+	}))
 }
