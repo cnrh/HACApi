@@ -8,26 +8,27 @@ import (
 
 // PublicRoutes sets up groups of public routes.
 func PublicRoutes(server *repository.Server) {
-	// Create group
+	// Create group.
 	route := server.App.Group("/api/v1")
 
-	// Routes for POST methods
+	// Routes for POST methods.
 
-	// login
+	// login.
 	route.Post("/login", utils.WrapController(server, controllers.PostLogin)) // post login
-	// classwork
+
+	// classwork.
 	route.Post("/classwork", utils.WrapController(server, controllers.PostClasswork)) // post classwork
 
-	// ipr
+	// ipr.
 	route.Post("/ipr", utils.WrapController(server, controllers.PostIPR))        // post interim progress report
 	route.Post("/ipr/all", utils.WrapController(server, controllers.PostIPRAll)) // post all interim progress reports
 
-	// report card
+	// report card.
 	route.Post("/reportcard", utils.WrapController(server, controllers.PostReportCard)) // post report card
 
-	// schedule
+	// schedule.
 	route.Post("/schedule", utils.WrapController(server, controllers.PostSchedule)) // post schedule
 
-	// transcript
+	// transcript.
 	route.Post("/transcript", utils.WrapController(server, controllers.PostTranscript)) // post transcript
 }

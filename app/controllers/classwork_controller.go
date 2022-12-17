@@ -19,58 +19,60 @@ import (
 //	@Success		200	{object}	models.ClassworkResponse
 //	@Router			/classwork [post]
 func PostClasswork(server *repository.Server, ctx *fiber.Ctx) error {
-	// Parse body
+	// Parse body.
 	params := new(models.ClassworkRequestBody)
 
-	// If parsing body params failed, return error
+	// Check if parsing body parameters succeeded.
 	if err := ctx.BodyParser(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":       true,
-			"msg":       "Bad body params",
-			"classwork": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ClassworkResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Verify validity of body params
+	// Verify the validity of the body params.
 	if err := server.Validator.Struct(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":       true,
-			"msg":       "Bad body params",
-			"classwork": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ClassworkResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Form cache key
+	// Form a cache key.
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	// Try logging in, or grab cached collector
+	// Try logging in, or grab the cached collector.
 	collector, err := server.Cache.GetOrLogin(cacheKey)
 
-	// Error out if login fails
+	// Error out if the login fails.
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":       true,
-			"msg":       "Invalid username/password/base",
-			"classwork": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ClassworkResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInvalidAuthentication.Error(),
+			},
 		})
 	}
 
-	// Get classwork
+	// Get the classwork.
 	classwork, err := server.Querier.GetClasswork(collector, *params)
 
-	// Check if returned value was nil
+	// Check if returned value was nil, and if so error out.
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err":       true,
-			"msg":       "Classwork not found. Might be an internal error",
-			"classwork": nil,
+		return ctx.Status(fiber.StatusInternalServerError).JSON(models.ClassworkResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInternalError.Error(),
+			},
 		})
 	}
 
-	// All is well
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"err":       false,
-		"msg":       "",
-		"classwork": classwork,
+	// Return the recieved classwork.
+	return ctx.Status(fiber.StatusOK).JSON(models.ClassworkResponse{
+		Classwork: classwork,
 	})
 }
