@@ -7,7 +7,6 @@ require (
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/gocolly/colly v1.2.0
 	github.com/gofiber/fiber/v2 v2.40.1
-	github.com/gofiber/swagger v0.1.8
 	github.com/google/go-cmp v0.5.9
 	github.com/jellydator/ttlcache/v3 v3.0.0
 	github.com/joho/godotenv v1.4.0
@@ -47,7 +46,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
-	github.com/swaggo/files v1.0.0 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
