@@ -24,7 +24,6 @@ With more features in the works, including:
 - Teacher Email Support
 - Attendance
 - Comment Legend
-- `/multiple` endpoint for requesting multiple items at once
 
 ## Local Setup
 
