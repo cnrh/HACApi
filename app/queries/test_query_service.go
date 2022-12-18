@@ -30,8 +30,9 @@ func (queries TestQuerier) GetIPR(collector *colly.Collector, params models.IprR
 	return []models.IPR{{}}, nil
 }
 
+// Send back the credentials recieved.
 func (queries TestQuerier) GetLogin(collector *colly.Collector, params models.LoginRequestBody) ([]models.Login, error) {
-	return []models.Login{{}}, nil
+	return []models.Login{models.Login(params.BaseRequestBody)}, nil
 }
 
 func (queries TestQuerier) GetReportCard(collector *colly.Collector, params models.ReportCardRequestBody) ([]models.ReportCard, error) {

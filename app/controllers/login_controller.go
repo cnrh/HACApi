@@ -19,55 +19,59 @@ import (
 //	@Success		200	{object}	models.LoginResponse
 //	@Router			/login [post]
 func PostLogin(server *repository.Server, ctx *fiber.Ctx) error {
-	// Parse body
+	// Parse body.
 	params := new(models.LoginRequestBody)
 
-	// If parsing body params failed, return error
+	// Check if parsing was successful.
 	if err := ctx.BodyParser(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":   true,
-			"msg":   "Bad body params",
-			"login": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.LoginResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Verify validity of body params
+	// Verify the validity of the body parameters.
 	if err := server.Validator.Struct(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":   true,
-			"msg":   "Bad body params",
-			"login": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.LoginResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Form cache key
+	// Form a cache key.
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	// Cache the user, if not cached already
+	// Cache the user, if not cached already.
 	collector, err := server.Cache.GetOrLogin(cacheKey)
+
+	// Check if caching succeeded.
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":   true,
-			"msg":   "Invalid username/password",
-			"login": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.LoginResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInvalidAuthentication.Error(),
+			},
 		})
 	}
 
-	// Get response
+	// Get response from the querier.
 	login, err := server.Querier.GetLogin(collector, *params)
 
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err":   true,
-			"msg":   "Invalid username/password",
-			"login": nil,
+		return ctx.Status(fiber.StatusInternalServerError).JSON(models.LoginResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInternalError.Error(),
+			},
 		})
 	}
 
-	// Success
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"err":   false,
-		"msg":   "",
-		"login": login,
+	// Send back information about the login.
+	return ctx.Status(fiber.StatusOK).JSON(models.LoginResponse{
+		Login: login,
 	})
 }

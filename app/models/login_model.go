@@ -18,6 +18,6 @@ type Login struct {
 // LoginResponse represents a JSON response
 // to the Login POST request.
 type LoginResponse struct {
-	HTTPError       // Error, if one is attached to the response
-	Login     Login `json:"login"` // Data about the login
+	HTTPError         // Error, if one is attached to the response
+	Login     []Login `json:"login"` // Data about the login
 }

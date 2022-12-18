@@ -263,7 +263,7 @@ func TestPostIPR_BadBodyParams_InvalidModel(t *testing.T) {
 
 	// Test.
 	if diff := cmp.Diff(expected, got); diff != "" {
-		t.Fatalf("Failed for PostIPR() Bad Body Parameters (-want, +got)\n%s", diff)
+		t.Fatalf("Failed for PostIPR() Bad Body Parameters, Invalid Request Model (-want, +got)\n%s", diff)
 	}
 }
 
