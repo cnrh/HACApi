@@ -18,58 +18,60 @@ import (
 //	@Success		200	{object}	models.ReportCardResponse
 //	@Router			/reportcard [post]
 func PostReportCard(server *repository.Server, ctx *fiber.Ctx) error {
-	// Parse body
+	// Parse body.
 	params := new(models.ReportCardRequestBody)
 
-	// If parsing fails, error out
+	// Check if the body was parsed successfully.
 	if err := ctx.BodyParser(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Bad body params",
-			"reportCard": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ReportCardResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Verify validity of body params
+	// Verify the validity of body the parameters.
 	if err := server.Validator.Struct(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Bad body params",
-			"reportCard": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ReportCardResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Form cache key
+	// Form a cache key.
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	// Try logging in, or grab cached collector
+	// Try logging in, or grab the cached collector.
 	collector, err := server.Cache.GetOrLogin(cacheKey)
 
-	// Error out if login fails
+	// Check if the login was successful.
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Invalid username/password/base",
-			"reportCard": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ReportCardResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInvalidAuthentication.Error(),
+			},
 		})
 	}
 
-	// Get report card
+	// Get the report card.
 	reportCard, err := server.Querier.GetReportCard(collector, *params)
 
-	// Check if returned value was nil
+	// Check if getting the report card was successful.
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Report Card not found. Might be an internal error",
-			"reportCard": nil,
+		return ctx.Status(fiber.StatusInternalServerError).JSON(models.ReportCardResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInternalError.Error(),
+			},
 		})
 	}
 
-	// All is well
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"err":        false,
-		"msg":        "",
-		"reportCard": reportCard,
+	// Return the report card.
+	return ctx.Status(fiber.StatusOK).JSON(models.ReportCardResponse{
+		ReportCard: reportCard,
 	})
 }
