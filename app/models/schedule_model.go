@@ -25,6 +25,6 @@ type Schedule struct {
 // ScheduleResponse represents a JSON response
 // to the Schedule POST request.
 type ScheduleResponse struct {
-	HTTPError          // Error, if one is attached to the response
-	Schedule  Schedule `json:"schedule"` // The resulting schedule
+	HTTPError            // Error, if one is attached to the response
+	Schedule  []Schedule `json:"schedule"` // The resulting schedule
 }

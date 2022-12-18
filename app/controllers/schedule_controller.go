@@ -18,58 +18,60 @@ import (
 //	@Success		200	{object}	models.ScheduleResponse
 //	@Router			/schedule [post]
 func PostSchedule(server *repository.Server, ctx *fiber.Ctx) error {
-	// Parse body
+	// Parse body.
 	params := new(models.ScheduleRequestBody)
 
-	// If parsing fails, error out
+	// Check if parsing was successful.
 	if err := ctx.BodyParser(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":      true,
-			"msg":      "Bad body params",
-			"schedule": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ScheduleResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Check for body param validity
+	// Check for body parameter validity.
 	if err := server.Validator.Struct(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":      true,
-			"msg":      "Bad body params",
-			"schedule": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ScheduleResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Form cache key
+	// Form a cache key.
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	// Try logging in, or grab cached collector
+	// Try logging in, or grab the cached collector.
 	collector, err := server.Cache.GetOrLogin(cacheKey)
 
-	// Error out if login fails
+	// Check if the login was successful.
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":      true,
-			"msg":      "Invalid username/password/base",
-			"schedule": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.ScheduleResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInvalidAuthentication.Error(),
+			},
 		})
 	}
 
-	// Get schedule
+	// Get the schedule.
 	schedule, err := server.Querier.GetSchedule(collector, *params)
 
-	// Check if returned value was nil
+	// Check if getting the schedule succeeded.
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err":      true,
-			"msg":      "Schedule not found. Might be an internal error",
-			"schedule": nil,
+		return ctx.Status(fiber.StatusInternalServerError).JSON(models.ScheduleResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInternalError.Error(),
+			},
 		})
 	}
 
-	// All is well
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"err":      false,
-		"msg":      "",
-		"schedule": schedule,
+	// Return the schedule.
+	return ctx.Status(fiber.StatusOK).JSON(models.ScheduleResponse{
+		Schedule: schedule,
 	})
 }

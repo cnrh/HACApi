@@ -18,56 +18,60 @@ import (
 //	@Success		200	{object}	models.TranscriptResponse
 //	@Router			/transcript [post]
 func PostTranscript(server *repository.Server, ctx *fiber.Ctx) error {
-	// Parse body
+	// Parse body.
 	params := new(models.TranscriptRequestBody)
 
+	// Check if the parsing was successful.
 	if err := ctx.BodyParser(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Bad body params",
-			"transcript": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.TranscriptResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Verify validity of body params
+	// Verify the validity of the body params.
 	if err := server.Validator.Struct(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Bad body params",
-			"transcript": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.TranscriptResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Form cache key
+	// Form a cache key.
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	// Try logging in, or grab cached collector
+	// Try logging in, or grab the cached collector.
 	collector, err := server.Cache.GetOrLogin(cacheKey)
 
-	// Error out if login fails
+	// Check if the login went through.
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Invalid username/password/base",
-			"transcript": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.TranscriptResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInvalidAuthentication.Error(),
+			},
 		})
 	}
 
-	// Get transcript
+	// Get the transcript.
 	transcript, err := server.Querier.GetTranscript(collector, *params)
-	// Check if returned value was nil
+
+	// Check if getting the transcript was successful.
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err":        true,
-			"msg":        "Transcript not found. Might be an internal error",
-			"transcript": nil,
+		return ctx.Status(fiber.StatusInternalServerError).JSON(models.TranscriptResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInternalError.Error(),
+			},
 		})
 	}
 
-	// All is well
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"err":        false,
-		"msg":        "",
-		"transcript": transcript,
+	// Return the transcript.
+	return ctx.Status(fiber.StatusOK).JSON(models.TranscriptResponse{
+		Transcript: transcript,
 	})
 }

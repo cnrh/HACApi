@@ -44,6 +44,6 @@ type Transcript struct {
 // TranscriptResponse represents a JSON response
 // to the Transcript POST request.
 type TranscriptResponse struct {
-	HTTPError             // Error, if one is attached to the response
-	Transcript Transcript `json:"transcript"` // The resulting transcript
+	HTTPError               // Error, if one is attached to the response
+	Transcript []Transcript `json:"transcript"` // The resulting transcript
 }
