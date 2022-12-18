@@ -43,7 +43,6 @@ func TestPostClasswork_AllValidInputs_NoMarkingPeriods(t *testing.T) {
 			Password: repository.FakePassword,
 			Base:     repository.FakeBase,
 		},
-		MarkingPeriods: nil,
 	}
 	body, _ := sonic.Marshal(bodyData)
 
@@ -168,7 +167,6 @@ func TestPostClasswork_BadBodyParams(t *testing.T) {
 			Password: repository.FakePassword,
 			Base:     repository.FakeBase,
 		},
-		MarkingPeriods: nil,
 	}
 	body, _ := sonic.Marshal(bodyData)
 
@@ -205,6 +203,71 @@ func TestPostClasswork_BadBodyParams(t *testing.T) {
 	// Test.
 	if diff := cmp.Diff(expected, got); diff != "" {
 		t.Fatalf("Failed for PostClasswork() Bad Body Parameters (-want, +got)\n%s", diff)
+	}
+}
+
+// Test if PostClasswork() errors out due to a
+// bad request model.
+func TestPostClasswork_BadBodyParams_InvalidModel(t *testing.T) {
+	// Set up testing server.
+	server := &repository.Server{
+		App: fiber.New(fiber.Config{
+			JSONEncoder: sonic.Marshal,
+			JSONDecoder: sonic.Unmarshal,
+		}),
+		Querier:   queries.NewTestQuerier(),
+		Validator: validator.New(),
+		Cache:     cache.NewTestCache(),
+	}
+
+	// Register PostClasswork() as the handler
+	// for the default route.
+	server.App.Post("/", utils.WrapController(server, PostClasswork))
+
+	// Create request data with the wrong model.
+	bodyData := models.ClassworkRequestBody{
+		BaseRequestBody: models.BaseRequestBody{
+			Username: "",
+			Password: "",
+			Base:     "",
+		},
+	}
+	body, _ := sonic.Marshal(bodyData)
+
+	// Create a test request.
+	req := httptest.NewRequest("POST", "http://fake.url/", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Test the request.
+	resp, _ := server.App.Test(req)
+
+	// Parse the body.
+	resBody, _ := io.ReadAll(resp.Body)
+	res := models.ClassworkResponse{}
+
+	sonic.Unmarshal(resBody, &res)
+
+	// Make expected body.
+	expected := utils.ExpectedServerResponse[models.ClassworkResponse]{
+		Status: fiber.StatusBadRequest,
+		Body: models.ClassworkResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
+			Classwork: nil,
+		},
+	}
+
+	// Convert response to a comparable struct.
+	got := utils.ExpectedServerResponse[models.ClassworkResponse]{
+		Status: resp.StatusCode,
+		Body:   res,
+	}
+
+	// Test.
+	if diff := cmp.Diff(expected, got); diff != "" {
+		t.Fatalf("Failed for PostClasswork() Bad Body Parameters, Invalid Request Model (-want, +got)\n%s", diff)
 	}
 }
 
@@ -367,7 +430,6 @@ func TestPostClasswork_InvalidCredentials(t *testing.T) {
 			Password: "bad password",
 			Base:     "bad base",
 		},
-		MarkingPeriods: nil,
 	}
 	body, _ := sonic.Marshal(bodyData)
 
@@ -433,7 +495,6 @@ func TestPostClasswork_InternalError(t *testing.T) {
 			Password: repository.FakePassword,
 			Base:     repository.FakeBase,
 		},
-		MarkingPeriods: nil,
 	}
 	body, _ := sonic.Marshal(bodyData)
 

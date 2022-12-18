@@ -18,58 +18,60 @@ import (
 //	@Success		200	{object}	models.IPRResponse
 //	@Router			/ipr/all [post]
 func PostIPRAll(server *repository.Server, ctx *fiber.Ctx) error {
-	// Parse body
+	// Parse body.
 	params := new(models.IprAllRequestBody)
 
-	// Error out if fail to parse body
+	// Check if parsing body was successful.
 	if err := ctx.BodyParser(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err": true,
-			"msg": "Bad body params",
-			"ipr": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.IPRResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Check for body param validity
+	// Check if the body parameters are valid.
 	if err := server.Validator.Struct(params); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err": true,
-			"msg": "Bad body params",
-			"ipr": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.IPRResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorBadBodyParams.Error(),
+			},
 		})
 	}
 
-	// Form cache key
+	// Form a cache key.
 	cacheKey := fmt.Sprintf("%s\n%s\n%s", params.Username, params.Password, params.Base)
 
-	// Try logging in, or grab cached collector
+	// Try logging in, or grab the cached collector
 	collector, err := server.Cache.GetOrLogin(cacheKey)
 
-	// Error out if login fails
+	// Check if the login failed.
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"err": true,
-			"msg": "Invalid username/password/base",
-			"ipr": nil,
+		return ctx.Status(fiber.StatusBadRequest).JSON(models.IPRResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInvalidAuthentication.Error(),
+			},
 		})
 	}
 
-	// Get IPRs
+	// Get IPRs.
 	iprs, err := server.Querier.GetIPRAll(collector, *params)
 
-	// Check if returned value was nil
+	// Check if getting IPRs succeeded.
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"err": true,
-			"msg": "IPRs not found. Might be an internal error",
-			"ipr": nil,
+		return ctx.Status(fiber.StatusInternalServerError).JSON(models.IPRResponse{
+			HTTPError: models.HTTPError{
+				Error:   true,
+				Message: repository.ErrorInternalError.Error(),
+			},
 		})
 	}
 
-	// All is well
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"err": false,
-		"msg": "",
-		"ipr": iprs,
+	// Return the grabbed IPRs.
+	return ctx.Status(fiber.StatusOK).JSON(models.IPRResponse{
+		IPR: iprs,
 	})
 }
